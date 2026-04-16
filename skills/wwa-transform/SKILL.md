@@ -227,6 +227,21 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 - Company types relevant to their market
 - Form copy
 
+**`src/components/live-session-overlay.tsx`** — CRITICAL:
+- Replace the SVG logo paths (appears 2 times: header + animated center) with the brand's logo
+- Update the viewBox to match the brand's SVG
+- The voice call should show the BRAND logo, not any other brand
+
+**`src/components/assistant-shared.tsx`** — CRITICAL:
+- The `EmptyState` component shows the welcome screen + voice call button
+- Must use the brand's logo image (not inline SVG)
+- Voice call button opens the live session overlay
+
+**`src/lib/brand-config.ts`** — Logo:
+- If SVG logo downloaded: set `logoSvg: ""` and `logoImage: "/images/brand-logo.svg"`
+- Prefer using logo IMAGE file over inline SVG to avoid rendering issues
+- Download the logo via WebSearch for "{brand} logo SVG" or from Wikipedia/press kit
+
 **`src/components/world-map.tsx`** — Update stats or remove if not relevant
 
 **`src/components/card-3d.tsx`** — Only relevant if company has visual cards/products. For API companies, this component won't be used much.
