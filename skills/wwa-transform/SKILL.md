@@ -253,7 +253,10 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 
 **`src/components/world-map.tsx`** — Update stats or remove if not relevant
 
-**`src/components/card-3d.tsx`** — Only relevant if company sells visual cards/products. For API companies, not used.
+**`src/components/card-3d.tsx`** — ONLY for credit card companies (Visa, Mastercard). 
+- For ALL other companies: the template already uses product image cards instead of Card3D
+- The `cards-browse-panel.tsx` and `wwa-panel.tsx` CardCarousel show product images with name/price overlay
+- Do NOT use Card3D for fashion, SaaS, e-commerce, or any non-card company — it renders a credit card with chip and magnetic stripe
 
 ### Step 3.6: Verify Zero Original References
 

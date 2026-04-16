@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Shield, Globe, Zap, Star, CreditCard, Check, ChevronRight, User, Mail, Phone, MapPin, Lock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card3D } from "./card-3d";
+
 import { ProductItem, productItems } from "@/lib/cards";
 import { useUserStore } from "@/lib/user-store";
 import { cn } from "@/lib/utils";
@@ -321,7 +321,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
         {/* Card Hero - 3D */}
         <div className="bg-gradient-to-br from-[#1A1F71] to-[#0d1147] px-6 py-10 md:px-12 md:py-16">
           <div className="max-w-2xl mx-auto flex flex-col items-center gap-8">
-            <Card3D card={selectedCard} size="lg" />
+            <div className="w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden border border-neutral-200"><img src={selectedCard.image} alt={selectedCard.name} className="w-full h-full object-cover" /></div>
             <div className="text-white text-center space-y-3">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">{selectedCard.tier}</span>
               <h1 className="text-3xl md:text-4xl font-semibold">{selectedCard.name}</h1>
@@ -498,7 +498,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
         <div className="grid gap-6 md:grid-cols-2">
           {filteredCards.map((card) => (
             <div key={card.id} className="flex flex-col items-center gap-3 group cursor-pointer" onClick={() => handleSelectCard(card)}>
-              <Card3D card={card} size="sm" />
+              <div className="w-[200px] h-[260px] rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-all group"><img src={card.image} alt={card.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>
               <div className="text-center space-y-1 w-full px-2">
                 <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-[#1A1F71] transition-colors">{card.name}</h3>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
