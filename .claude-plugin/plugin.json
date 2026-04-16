@@ -7,7 +7,7 @@
     "email": "hello@codiris.app"
   },
   "homepage": "https://codiris.app/skills",
-  "repository": "https://github.com/irislab/wwa-transform",
+  "repository": "https://github.com/Humiris/wwa-transform",
   "license": "MIT",
   "keywords": ["wwa", "agentfront", "transform", "website", "ai-agent", "deploy"]
 }

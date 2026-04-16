@@ -10,7 +10,7 @@ WWA Transform is a Claude Code plugin + CLI tool that transforms any website int
 
 ```bash
 # Clone to your plugins directory
-git clone https://github.com/irislab/wwa-transform.git ~/.claude/plugins/wwa-transform
+git clone https://github.com/Humiris/wwa-transform.git ~/.claude/plugins/wwa-transform
 ```
 
 Then in Claude Code:
@@ -27,7 +27,7 @@ npx wwa-transform https://stripe.com
 ### Codex
 
 ```bash
-codex --plugin https://github.com/irislab/wwa-transform
+codex --plugin https://github.com/Humiris/wwa-transform
 ```
 
 Then ask: "Transform stripe.com into an agentfront"
