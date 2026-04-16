@@ -1,0 +1,23 @@
+{
+  "name": "wwa-transform",
+  "version": "1.0.0",
+  "description": "Transform any website into an AI-powered agent-first experience",
+  "main": "dist/index.js",
+  "bin": {
+    "wwa-transform": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": ["wwa", "agentfront", "ai", "transform", "website"],
+  "license": "MIT",
+  "dependencies": {
+    "node-html-parser": "^6.1.13"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "ts-node": "^10.9.2"
+  }
+}

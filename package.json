@@ -1,0 +1,8 @@
+{
+  "name": "wwa-skill",
+  "version": "1.0.0",
+  "description": "WWA Transform — Turn any website into an agent-first experience",
+  "private": true,
+  "license": "MIT",
+  "workspaces": ["cli", "template"]
+}
