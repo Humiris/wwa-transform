@@ -1,0 +1,20 @@
+{
+  "name": "wwa-plugins",
+  "interface": {
+    "displayName": "WWA Plugins by Iris Lab"
+  },
+  "plugins": [
+    {
+      "name": "wwa-transform",
+      "source": {
+        "source": "local",
+        "path": "./plugins/wwa-transform"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    }
+  ]
+}
