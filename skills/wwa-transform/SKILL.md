@@ -233,18 +233,27 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 - The voice call should show the BRAND logo, not any other brand
 
 **`src/components/assistant-shared.tsx`** — CRITICAL:
-- The `EmptyState` component shows the welcome screen + voice call button
-- Must use the brand's logo image (not inline SVG)
-- Voice call button opens the live session overlay
+- The `EmptyState` component shows welcome screen with brand logo
+- The logo IS the call button — clicking it starts the voice call. NO separate "Start Voice Call" text button
+- Pattern: `<button onClick={onOpen}><img src="/images/brand-logo.svg" /></button>`
+- Must use brand's logo image file (not inline SVG — renders badly)
+
+**`src/components/agent-panel.tsx`** — CRITICAL (often forgotten):
+- Rename ALL skill names: "visa-search" → "{brand}-search", etc.
+- Rename CLI commands: "visa-agent" → "{brand}-agent"
+- Rename MCP package: "visa-agent-mcp" → "{brand}-agent-mcp"
+- Update AgentNet command: "agentnet add {brand}-agent"
+- Update skill descriptions to match brand's products
+- Update CLI example commands to be relevant to brand
 
 **`src/lib/brand-config.ts`** — Logo:
-- If SVG logo downloaded: set `logoSvg: ""` and `logoImage: "/images/brand-logo.svg"`
-- Prefer using logo IMAGE file over inline SVG to avoid rendering issues
-- Download the logo via WebSearch for "{brand} logo SVG" or from Wikipedia/press kit
+- Download logo via WebSearch: "{brand} logo SVG wikipedia" or "{brand} press kit"
+- Set `logoSvg: ""` and `logoImage: "/images/brand-logo.svg"`
+- ALWAYS prefer logo image file over inline SVG to avoid rendering issues
 
 **`src/components/world-map.tsx`** — Update stats or remove if not relevant
 
-**`src/components/card-3d.tsx`** — Only relevant if company has visual cards/products. For API companies, this component won't be used much.
+**`src/components/card-3d.tsx`** — Only relevant if company sells visual cards/products. For API companies, not used.
 
 ### Step 3.6: Verify Zero Original References
 
