@@ -244,6 +244,34 @@ Other working fashion/beauty publication CDNs:
 
 **IMPORTANT:** Sample a couple of images first (~2-3MB each). On macOS use `sips -Z 1200 input.jpg -o output.jpg` to resize before committing.
 
+### Brand Videos for Hero Backgrounds
+
+Many luxury brands have hero video loops that dramatically elevate the feel. Look for them:
+
+```bash
+# Brand-hosted videos often work with proper headers
+curl -sL -o public/videos/hero.webm "{brand-video-url}" \
+  -H "User-Agent: Mozilla/5.0" \
+  -H "Referer: https://{domain}/"
+```
+
+**Finding brand video URLs:**
+- Dior: `diorama.dam-broadcast.com/...` — works publicly
+- Apple: `apple.com/assets-www/...` — often public
+- Most fashion houses have `dam-broadcast` or `.cdn.` video CDNs
+- Inspect the brand's homepage for `<video>` or `<source>` tags with `.webm` / `.mp4`
+- WebSearch: "{brand} hero video webm" or check Dam broadcast networks
+
+**Implementation in hero-section.tsx:**
+```tsx
+<video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" poster="/images/hero-image.jpg">
+  <source src="/videos/hero.webm" type="video/webm" />
+</video>
+<div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70" />
+```
+
+Video hero is essential for luxury brands. Fall back to static image if video can't be obtained. Keep videos under 10MB (resize with ffmpeg if needed).
+
 **3. Unsplash (MANDATORY FALLBACK — always works, real product photos)**
 ```bash
 # Search URL pattern: https://images.unsplash.com/photo-{id}?w=800&q=80
