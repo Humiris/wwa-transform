@@ -87,6 +87,42 @@ After crawling, THINK deeply about the company. Answer these questions BEFORE wr
 - What stats are impressive? (Users, revenue, uptime, countries)
 - What social proof do they have? (Customer logos, testimonials)
 
+**Typography (CRITICAL — match brand aesthetic):**
+
+The template uses Geist by default. You MUST change fonts to match the brand:
+
+| Brand Type | Fonts to Use | Implementation |
+|------------|--------------|----------------|
+| Luxury fashion (Dior, Hermès, Chanel) | Playfair Display + Inter | Serif headings, clean body |
+| Tech/SaaS (Stripe, Notion, Linear) | Inter or Geist | Modern sans-serif |
+| Premium/Editorial (Apple, Aesop) | SF Pro / Helvetica Neue / system fonts | Clean, minimal |
+| Fintech (Visa, Chase) | Geist / Inter | Professional sans |
+| E-commerce (Amazon, Walmart) | Inter / Roboto | Readable, utilitarian |
+
+Update `src/app/layout.tsx`:
+```tsx
+import { Playfair_Display, Inter } from "next/font/google";
+
+const serif = Playfair_Display({ variable: "--font-serif", subsets: ["latin"] });
+const sans = Inter({ variable: "--font-sans", subsets: ["latin"] });
+
+// In body: className={`${serif.variable} ${sans.variable} font-sans`}
+```
+
+Update `src/app/globals.css`:
+```css
+:root {
+  --brand-primary: #000000;    /* match brand color */
+  --brand-secondary: #C9A96E;
+  --font-serif-brand: var(--font-serif), "Didot", "Bodoni MT", "Georgia", serif;
+}
+
+h1, h2, .font-serif {
+  font-family: var(--font-serif-brand);
+  letter-spacing: -0.01em;
+}
+```
+
 **User Intent (CRITICAL — drives CTAs and modals):**
 Analyze what users ACTUALLY do on this site. Map to correct CTA:
 
@@ -177,6 +213,36 @@ curl -sL -o public/images/brand-logo.svg \
   -H "User-Agent: Mozilla/5.0"
 ```
 Use WebSearch: "{brand} logo SVG wikimedia commons"
+
+**2.5. INDUSTRY PUBLICATIONS — USE THIS FOR FASHION BRANDS**
+Fashion/luxury brands block their own CDN, but fashion PUBLICATIONS host real runway photos:
+
+```bash
+# WWD (Women's Wear Daily) — 2-3MB runway photos, works without auth
+# Pattern: https://wwd.com/wp-content/uploads/{YYYY}/{MM}/{brand}-{collection}-{location}-GG-{01-80}.jpg
+
+curl -sL -o public/images/runway.jpg \
+  "https://wwd.com/wp-content/uploads/2025/05/dior-cruise-2026-rome-GG-01.jpg" \
+  -H "User-Agent: Mozilla/5.0"
+
+# Fragrantica CDN — real perfume bottle photos, works without auth
+# Pattern: https://fimgs.net/mdimg/perfume/375x500.{perfume_id}.jpg
+# Find IDs via WebSearch: "{perfume name} fragrantica"
+
+curl -sL -o public/images/jadore.jpg \
+  "https://fimgs.net/mdimg/perfume/375x500.210.jpg" \
+  -H "User-Agent: Mozilla/5.0"
+```
+
+Other working fashion/beauty publication CDNs:
+- **wwd.com/wp-content/uploads/** — runway, backstage, beauty product shots
+- **fimgs.net/mdimg/perfume/** — perfume bottles (Fragrantica)
+- **nowfashion.com/wp-content/uploads/** — runway photos
+- **showstudio.com/** — editorial fashion content
+- **vogue.com/photos/** — often requires auth
+- **fashionography.com/wp-content/uploads/** — runway archives
+
+**IMPORTANT:** Sample a couple of images first (~2-3MB each). On macOS use `sips -Z 1200 input.jpg -o output.jpg` to resize before committing.
 
 **3. Unsplash (MANDATORY FALLBACK — always works, real product photos)**
 ```bash
