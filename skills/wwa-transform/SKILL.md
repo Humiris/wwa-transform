@@ -461,12 +461,73 @@ The template has credit-card-specific labels throughout the detail view. You MUS
 
 Also: the detail view renders the product with a dark gradient background and centered 3D card — change to a white background with image on left + details on right for product-style layout.
 
+**`src/components/wwa-panel.tsx`** — ACCOUNT CREATION FLOW:
+
+The template's account creation asks for "annual income" (makes sense for credit card applications, wrong for everything else). For non-financial brands, replace the income question with something contextually relevant:
+
+| Brand Type | Replace "annual income" with |
+|------------|------------------------------|
+| Luxury/Fashion | "What categories interest you most? (Fragrance, Bags, Fashion, Jewelry)" |
+| E-commerce | "What styles do you prefer?" |
+| SaaS | "What's your role/team size?" |
+| Enterprise | "What's your company size?" |
+| Content/Media | "What genres do you like?" |
+| Financial | Keep "annual income" — it's relevant |
+
+Also update:
+- `lastAssistantMsg.includes("annual income")` → check for the new question
+- Welcome message: "Apply for any card" → "Shop" / "Start using" / appropriate verb
+- Summary line: "💰 $income" → "✨ Interests: preferences"
+- Avatar background color: `1A1F71` (Visa blue) → brand primary color
+
+**`src/components/wwa-panel.tsx`** — BUY/CHECKOUT MESSAGES:
+
+Replace credit-card phrasing in the buy intent responses:
+- "apply for" → "order" / "shop" / "checkout"
+- "card" → "product" / "item"
+- "annual fee" → "price"
+- "Quick apply" → "Quick checkout" / "Fast order"
+- "I'll fill the form for you" → "I'll place the order for you"
+
+**`src/components/world-map.tsx`** — REGIONAL STATS:
+
+The template has credit-card network stats (`merchants: "12M+"`, `banks: "5,000+"`, `cards: "800M+"`). Replace with brand-appropriate stats:
+
+| Brand Type | Regional Stats |
+|------------|----------------|
+| Luxury/Fashion | Boutiques per region, artisans, flagship locations |
+| SaaS | Data centers, enterprise customers, API regions |
+| Retail | Stores, distribution centers, warehouses |
+| Finance | Banks, merchants, cards (keep default) |
+
+Also update GLOBAL_STATS: `"4B+ Cards worldwide"` must match the brand's reality.
+
+**`src/components/card-comparison.tsx`** — TIER BENEFITS:
+
+The template has 20+ Visa-specific credit card benefits (Zero Liability, Auto Rental CDW, Trip Delay, Global Entry Credit, etc). REMOVE all of these and write tier benefits that apply to the brand:
+
+| Brand Type | Tier Benefit Examples |
+|------------|----------------------|
+| Luxury/Fashion | Free shipping, gift wrap, personalization, private shopping, birthday gift, archive access |
+| SaaS | API calls/mo, support SLA, seats, priority features, dedicated account manager |
+| Retail | Free shipping threshold, returns window, early access, member pricing |
+| Subscription | Streaming quality, devices, downloads, family sharing, ad-free |
+
+Tier names `Traditional / Signature / Infinite` are Visa-specific — rename to match the brand's tier system (e.g., Free/Pro/Enterprise for SaaS, Essentials/Signature/Élite for luxury).
+
 ### Step 3.6: Verify Zero Original References
 
+Two comprehensive checks. BOTH must return 0 lines (or only intentional lines) before deploying:
+
 ```bash
+# 1. Check for any Visa-brand text leaks
 grep -rn "Visa\|visa\.\|#1A1F71\|#141963\|#1434CB" src/ --include="*.tsx" --include="*.ts" | grep -v visaCards | grep -v VisaCard
+
+# 2. Check for credit-card terminology that doesn't fit non-card brands
+grep -rn "annual fee\|annual income\|card tier\|Apply Now\|cardholder\|APR\|Reward Rate\|Sign-Up Bonus\|issued by\|Zero Liability\|credit check\|credit history\|Traditional, Signature, and Infinite\|Issuer opt\." src/ --include="*.tsx" --include="*.ts" -i | grep -v node_modules
 ```
-Must return 0. Also grep for any content that's clearly from another company.
+
+Fix every remaining line before deployment. The `card-3d.tsx` component is allowed to keep credit-card text because it's only rendered for actual credit card brands (Visa/Mastercard).
 
 ---
 
