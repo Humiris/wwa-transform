@@ -87,6 +87,28 @@ After crawling, THINK deeply about the company. Answer these questions BEFORE wr
 - What stats are impressive? (Users, revenue, uptime, countries)
 - What social proof do they have? (Customer logos, testimonials)
 
+**User Intent (CRITICAL — drives CTAs and modals):**
+Analyze what users ACTUALLY do on this site. Map to correct CTA:
+
+| Company Type | Primary Intent | CTA Text | Modal Type |
+|--------------|---------------|----------|------------|
+| E-commerce (Dior, Nike, Apple) | Shop / Buy products | "Shop Now" | Cart / Product detail |
+| SaaS/API (Stripe, Notion) | Try / Book demo | "Start Free" or "Book a Demo" | Demo booking form |
+| Enterprise (Salesforce) | Contact sales | "Contact Sales" | Sales form |
+| Financial (Visa, banks) | Apply / Get card | "Apply Now" | Application form |
+| Marketplace (Airbnb) | Search / Book | "Start Searching" | Search UI |
+| Services (Consulting) | Contact / Meeting | "Book a Call" | Calendar booking |
+| Content (Netflix, Spotify) | Subscribe / Try | "Start Free Trial" | Signup form |
+
+**NEVER use "Book a Demo" for e-commerce.** E-commerce brands want you to SHOP, not schedule a meeting.
+
+Update these files based on intent:
+- `brand-config.ts` → `ctaPrimary` and `ctaSecondary`
+- `hero-section.tsx` → button text
+- `solution-detail-panel.tsx` → button text
+- `book-demo-modal.tsx` → rename, change fields to match intent (e-commerce = Contact Client Services, Cart, or remove entirely)
+- `actions.ts` system prompt → what the agent offers users
+
 ### Step 1.3: Define the Page Architecture
 
 Based on your analysis, decide which sections the homepage should have. Choose from:
