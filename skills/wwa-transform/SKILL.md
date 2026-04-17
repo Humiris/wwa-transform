@@ -450,6 +450,17 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 - Update AgentNet command: "agentnet add {brand}-agent"
 - Update skill descriptions to match brand's products
 - Update CLI example commands to be relevant to brand
+- MCP URL and Claude Code/Codex install commands read from `BRAND.mcpUrl` + `BRAND.mcpServerName` automatically — no string edits needed here as long as brand-config is correct.
+
+**`src/app/mcp/route.ts`** — REAL MCP ENDPOINT (ships with template):
+- The template serves a working MCP Streamable HTTP endpoint at `/mcp` on the same origin as the agentfront. JSON-RPC 2.0, stateless, CORS-enabled.
+- Default tools read from `productItems` (cards.ts) and `solutions` (solutions.ts): `search_products`, `compare_products`, `get_product`, `get_solutions`, `recommend_product`.
+- The `mcpTools` list shown in agent-panel.tsx is already synced with these 5 default tools.
+- To add brand-specific tools (e.g. `find_boutique` for luxury, `compare_tiers` for financial, `estimate_fees` for SaaS): append to the `TOOLS` array and add a `case` in `callTool`. Mirror the addition in agent-panel's `mcpTools` list.
+- **Brand-config keys to set:**
+  - `mcpUrl`: `"https://wwa.{brand}.codiris.app/mcp"` (same origin as deployed agentfront)
+  - `mcpServerName`: `"{brand}-agent"` (CLI identifier for `claude mcp add`)
+- **Verify after deploy:** `curl -X POST https://wwa.{brand}.codiris.app/mcp -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'` — must return the tool list with 200.
 
 **`src/lib/brand-config.ts`** — Logo:
 - Download logo via WebSearch: "{brand} logo SVG wikipedia" or "{brand} press kit"

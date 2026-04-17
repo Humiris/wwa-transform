@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Copy, Check, Key, Server, Terminal, Zap, ChevronRight, Globe, Eye, EyeOff, ExternalLink } from "lucide-react";
 import { useUserStore, fakeGoogleSignIn } from "@/lib/user-store";
+import { BRAND } from "@/lib/brand-config";
 import { cn } from "@/lib/utils";
 
 export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onClose: () => void; onSignIn?: () => void }) => {
@@ -37,9 +38,9 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
   const connectorInstructions: Record<string, string> = {
     "ChatGPT": "Settings → Developer Mode → Connectors → Add → paste URL",
     "Claude": "Settings → Integrations → MCP Servers → Add → paste URL",
-    "Claude Code": "claude mcp add visa-agent http://localhost:8787/mcp",
+    "Claude Code": `claude mcp add ${BRAND.mcpServerName} ${BRAND.mcpUrl}`,
     "Cursor": "Settings → MCP → Add Server → paste URL",
-    "Codex": "codex --mcp http://localhost:8787/mcp",
+    "Codex": `codex --mcp ${BRAND.mcpUrl}`,
     "Windsurf": "Settings → Cascade → MCP → Add → paste URL",
     "Copilot": "Settings → Extensions → MCP → Add Server URL",
     "Gemini": "AI Studio → Grounding → MCP → Add endpoint",
@@ -67,12 +68,11 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
   ];
 
   const mcpTools = [
-    { name: "search_cards", desc: "Find cards by category, tier, fees" },
-    { name: "compare_cards", desc: "Side-by-side card comparison" },
-    { name: "compare_tiers", desc: "Traditional vs Signature vs Infinite" },
-    { name: "global_presence", desc: "Worldwide stats by region" },
-    { name: "get_solutions", desc: "Payment solutions catalog" },
-    { name: "recommend_card", desc: "Personalized recommendation" },
+    { name: "search_products", desc: `Find ${BRAND.productLabel.toLowerCase()} by category, tier, price` },
+    { name: "compare_products", desc: "Side-by-side product comparison" },
+    { name: "get_product", desc: "Full details for a single product" },
+    { name: "get_solutions", desc: `${BRAND.solutionLabel} catalog` },
+    { name: "recommend_product", desc: "Personalized recommendation" },
   ];
 
   return (
@@ -176,8 +176,8 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
             <p className="text-xs text-neutral-400">{connectorInstructions[activeConnector] || "Paste the MCP URL in your platform settings"}</p>
 
             <div className="flex items-center justify-between bg-neutral-50 rounded-xl border border-neutral-200 px-4 py-3">
-              <code className="text-sm text-[#1A1F71] font-mono">http://localhost:8787/mcp</code>
-              <button onClick={() => copy("http://localhost:8787/mcp", "mcp-url")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
+              <code className="text-sm text-[#1A1F71] font-mono">{BRAND.mcpUrl}</code>
+              <button onClick={() => copy(BRAND.mcpUrl, "mcp-url")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
                 {copied === "mcp-url" ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-neutral-400" />}
               </button>
             </div>

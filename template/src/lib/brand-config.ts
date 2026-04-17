@@ -49,6 +49,10 @@ export interface BrandConfig {
 
   // Social/links
   websiteUrl: string;
+
+  // MCP agent endpoint — served by /src/app/mcp/route.ts
+  mcpUrl: string; // Public URL, e.g. "https://wwa.brand.codiris.app/mcp"
+  mcpServerName: string; // CLI identifier, e.g. "brand-agent"
 }
 
 // ============================================================
@@ -92,4 +96,7 @@ export const BRAND: BrandConfig = {
   ctaSecondary: "Get Started",
 
   websiteUrl: "https://example.com",
+
+  mcpUrl: "https://wwa.brand.codiris.app/mcp",
+  mcpServerName: "brand-agent",
 };
