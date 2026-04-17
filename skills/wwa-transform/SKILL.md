@@ -461,6 +461,40 @@ The template has credit-card-specific labels throughout the detail view. You MUS
 
 Also: the detail view renders the product with a dark gradient background and centered 3D card — change to a white background with image on left + details on right for product-style layout.
 
+**`src/components/hero-section.tsx`** — VISUAL STYLE BY BRAND TYPE:
+
+The default template uses a SaaS/tech aesthetic (split layout, colored gradient tiles, tech-y feature grid). This is WRONG for luxury/editorial brands. Adapt per brand:
+
+**LUXURY / EDITORIAL (Dior, Hermès, Chanel, Gucci, Aesop):**
+- **Hero**: Full-bleed image, black/white overlay, centered text, serif heading, no split
+- **CTAs**: Square buttons (no rounded-full), white-on-image, "Discover" / "Shop the Collection"
+- **Stats**: Minimal, no gradient background, serif numbers, uppercase labels with wide tracking
+- **Collections**: Large 2-col tiles with full product imagery, gradient overlay, serif headings
+- **Category grid**: Aspect 4:5 tiles with real product images as backgrounds (NOT colored gradients)
+- **Fonts**: Playfair Display / Didot style serif for all headings
+- **Typography**: `tracking-[0.3em]` on uppercase labels, `font-normal` (not bold) on headings
+- **Colors**: Black, white, cream, gold — no blue/purple accents
+- **Motion**: Slow, gentle (1-2s transitions), long fade-ins
+
+**TECH / SAAS (Stripe, Notion, Linear):**
+- Split hero with copy left + product screenshot right
+- Colored CTAs (rounded-full), "Start Building" / "Book a Demo"
+- Stats on dark background with bold numbers
+- Feature grid with icons (not images)
+- Code snippets as visual elements
+
+**CONSUMER (Apple, Nike, Spotify):**
+- Full-bleed hero with big bold text, keep sans-serif
+- Single prominent CTA, bold colors
+- Product-focused imagery, minimal copy
+
+**FINTECH / FINANCIAL (Visa, Chase, Robinhood):**
+- Keep current template style (split, colored tiers, card visuals)
+- Blue/navy color palette
+- Stats-heavy design, trust signals
+
+When transforming, EXPLICITLY adapt the hero and category grid to match the brand's visual DNA. Don't just update text — change the layout pattern.
+
 **`src/components/wwa-panel.tsx`** — ACCOUNT CREATION FLOW:
 
 The template's account creation asks for "annual income" (makes sense for credit card applications, wrong for everything else). For non-financial brands, replace the income question with something contextually relevant:
