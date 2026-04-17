@@ -137,12 +137,101 @@ curl -L -o "public/images/{name}.jpg" "{url}" \
 - Customer logos if available
 - Product screenshots/UI images
 
-**Reality check for SaaS/tech sites:** Most modern SaaS sites (Notion, Vercel, Linear) render product screenshots dynamically via JavaScript, SVG, or Canvas. These CANNOT be downloaded via curl. This is normal. For product images that can't be downloaded:
-- Use `https://placehold.co/800x400/{primary_hex_without_hash}/white?text={Product+Name}` — this is perfectly acceptable
-- Try to get at least the hero image and logo as real assets
-- Customer logos are often SVGs that CAN be downloaded
+### Image Source Priority (USE IN THIS ORDER)
 
-**If blocked (403):** Try without Referer, try `?w=800&q=80` params, try WebSearch for "{brand} press kit images".
+Most premium brand sites (Dior, Apple, Notion, Vercel, Hermès) AGGRESSIVELY BLOCK curl. Do NOT waste time trying to download from the brand's CDN. Skip directly to the fallback:
+
+**1. Brand's own CDN** (only works for ~30% of sites — try once, move on if blocked)
+```bash
+curl -sL -o public/images/{name}.jpg "{url}" \
+  -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" \
+  -H "Referer: https://{domain}/"
+```
+
+**2. Wikipedia / Wikimedia Commons** — works for famous brands, logos, iconic products
+```bash
+curl -sL -o public/images/brand-logo.svg \
+  "https://upload.wikimedia.org/wikipedia/commons/{path}/{file}.svg" \
+  -H "User-Agent: Mozilla/5.0"
+```
+Use WebSearch: "{brand} logo SVG wikimedia commons"
+
+**3. Unsplash (MANDATORY FALLBACK — always works, real product photos)**
+```bash
+# Search URL pattern: https://images.unsplash.com/photo-{id}?w=800&q=80
+# DO NOT make up IDs — use these tested working IDs by category:
+
+# Luxury perfume / fragrance bottle
+curl -sL -o public/images/perfume.jpg "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Men's cologne / dark bottle  
+curl -sL -o public/images/cologne.jpg "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Pink/feminine perfume
+curl -sL -o public/images/miss.jpg "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Luxury handbag
+curl -sL -o public/images/bag.jpg "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Canvas tote
+curl -sL -o public/images/tote.jpg "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Leather bag
+curl -sL -o public/images/leather-bag.jpg "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Red lipstick
+curl -sL -o public/images/lipstick.jpg "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Foundation / makeup
+curl -sL -o public/images/foundation.jpg "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Skincare cream
+curl -sL -o public/images/skincare.jpg "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Luxury skincare bottles
+curl -sL -o public/images/serum.jpg "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Gold jewelry / rings
+curl -sL -o public/images/jewelry.jpg "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Fashion / clothing
+curl -sL -o public/images/fashion.jpg "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Building / atelier (hero/about)
+curl -sL -o public/images/building.jpg "https://images.unsplash.com/photo-1519643225200-94e79e383724?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# SaaS / tech product screenshot
+curl -sL -o public/images/saas-ui.jpg "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Abstract tech / code
+curl -sL -o public/images/tech.jpg "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+```
+
+**Verify downloads:** Check file size with `ls -la`. Files under 1KB are failures. Failed downloads return ~29 bytes (Unsplash not-found) or ~300 bytes (error page). Re-download with different ID if under 1KB.
+
+**4. Placehold.co** — LAST RESORT ONLY if Unsplash also fails
+```bash
+curl -sL -o public/images/{name}.jpg "https://placehold.co/800x400/{hex_no_hash}/white?text={Product}"
+```
+
+### Required Downloads
+
+Every project MUST have (minimum):
+- Logo (SVG from Wikipedia or brand CDN)
+- Hero image (brand or category-matched Unsplash)
+- 1 image per solution (category-matched Unsplash)
+- 1 image per product (category-matched Unsplash)
+- Favicon from `https://www.google.com/s2/favicons?domain={domain}&sz=64`
+
+### Matching Unsplash Photos to Categories
+
+| Company Type | Use These Photos |
+|--------------|-----------------|
+| Luxury/Fashion (Dior, Hermès, LV) | Perfume + handbag + lipstick + jewelry + fashion |
+| Cosmetics (Sephora, Fenty) | Lipstick + foundation + makeup brushes |
+| Tech/SaaS (Stripe, Notion) | SaaS UI screenshots + tech + abstract |
+| E-commerce (Amazon, Shopify) | Product shots + packaging + shopping |
+| Fintech (Visa, Chase) | Cards + phone + wallet |
 
 ### Step 2.2: Download Favicon
 
