@@ -435,6 +435,32 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 - The `cards-browse-panel.tsx` and `wwa-panel.tsx` CardCarousel show product images with name/price overlay
 - Do NOT use Card3D for fashion, SaaS, e-commerce, or any non-card company — it renders a credit card with chip and magnetic stripe
 
+**`src/components/cards-browse-panel.tsx`** — PRODUCT DETAIL VIEW (non-credit-card companies):
+
+The template has credit-card-specific labels throughout the detail view. You MUST rewrite ALL of these for non-card brands:
+
+| Credit-card term | E-commerce/SaaS replacement |
+|------------------|----------------------------|
+| "Back to Cards" | "Back to Products" / "Back to Collection" |
+| "Issued by" | "From" / remove for brand-native products |
+| "Annual fee:" | "Price:" |
+| "Card Tier" | "Collection" / "Tier" / "Plan" |
+| "Card Highlights" | "Product Highlights" / "Features" |
+| "Card Details" | "Details" / "Specifications" |
+| "REWARDS / WELCOME BONUS / APR" | Remove entirely — not applicable |
+| "Ready to apply?" | "Ready to shop?" / "Ready to get started?" |
+| "Apply Now" | "Add to Bag" / "Buy Now" / "Subscribe" |
+| "Compare Other Cards" | "Explore Collection" / "Continue Shopping" |
+| "Application Submitted!" | "Order Confirmed!" / "Welcome!" |
+| "Quick application with instant decision" | "Complete your purchase" / "Get started in seconds" |
+| "Browse More Cards" | "Continue Shopping" / "Explore More" |
+| "Annual Income *" | "Shipping Notes" / remove |
+| "credit history" | Remove the credit check reference entirely |
+| `{annualFee}/yr` | `{price}` |
+| "Secure Application" | "Secure Checkout" |
+
+Also: the detail view renders the product with a dark gradient background and centered 3D card — change to a white background with image on left + details on right for product-style layout.
+
 ### Step 3.6: Verify Zero Original References
 
 ```bash
