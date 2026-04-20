@@ -110,33 +110,33 @@ export class GeminiLiveClient {
           speech_config: { voice_config: { prebuilt_voice_config: { voice_name: "Puck" } } },
           thinking_config: { thinking_level: "minimal" }
         },
-        // TEMPLATE NOTE: the example IDs in these tool descriptions are a MASSIVE signal to
-        // Gemini Live about what valid IDs look like. When you transform for a new brand you
-        // MUST replace the example IDs below with real ids from your brand's cards.ts and
-        // solutions.ts. Leaving the default "chase-sapphire-preferred" example on a luxury or
-        // SaaS brand causes Gemini to either refuse to call the tool, or call it with made-up
-        // card IDs that don't exist in productItems — the left panel stays empty during the
-        // voice call. See SKILL.md "Known template residues".
+        // TEMPLATE NOTE: tool schemas are intentionally brand-neutral. Gemini Live treats
+        // example IDs inside a description as a format hint and will pattern-match on them —
+        // if a Visa example like "chase-sapphire-preferred" leaks through, the model invents
+        // Visa-shaped IDs for any brand you transform, and the left panel stays empty.
+        // Do NOT add brand-specific examples here. The authoritative list of valid IDs is
+        // injected at runtime via AVAILABLE PRODUCTS / AVAILABLE COLLECTIONS in the system
+        // instruction (see live-session-overlay.tsx).
         tools: [{
           function_declarations: [
             {
               name: "show_card",
-              description: "Display a specific product on the user's screen. Call this IMMEDIATELY when the user asks to see/show/browse/compare anything in the catalog. The id must be one of the AVAILABLE PRODUCTS listed in the system instruction.",
+              description: "Display a product on the user's left panel so they can SEE what you're talking about. Call this IMMEDIATELY whenever you mention a specific product by name. The user is on a voice call and cannot see anything unless you call this tool.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  card_id: { type: "STRING", description: "The product id from the AVAILABLE PRODUCTS list. TEMPLATE: replace this example with a real id from your brand's cards.ts (e.g., 'jadore-edp' for Dior, 'chase-sapphire-preferred' for Visa, 'stripe-payments' for Stripe)." }
+                  card_id: { type: "STRING", description: "The exact product ID from AVAILABLE PRODUCTS in the system instruction. Use ONLY an ID that appears verbatim in that list — do not invent, guess, or abbreviate IDs." }
                 },
                 required: ["card_id"]
               }
             },
             {
               name: "show_solution",
-              description: "Display a collection or solution on the user's screen. Call this when the user asks about a category, line, or broader product family.",
+              description: "Display a collection, franchise, or category on the user's left panel. Call this IMMEDIATELY when discussing a collection or broader product family. The user cannot see anything unless you call this tool.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  solution_id: { type: "STRING", description: "The solution/collection id from the AVAILABLE COLLECTIONS list. TEMPLATE: replace this example with a real id from your brand's solutions.ts (e.g., 'cruise-2026' for Dior, 'tap-to-pay' for Visa, 'payments' for Stripe)." }
+                  solution_id: { type: "STRING", description: "The exact collection ID from AVAILABLE COLLECTIONS in the system instruction. Use ONLY an ID that appears verbatim in that list — do not invent, guess, or abbreviate IDs." }
                 },
                 required: ["solution_id"]
               }
