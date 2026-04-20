@@ -632,6 +632,38 @@ Fix every remaining line before deployment. The `card-3d.tsx` component is allow
 
 ## PHASE 4: Build, Deploy, Verify
 
+### Step 4.0: Slug collision check (BEFORE deploying)
+
+Two customers transforming the same brand would both race for the same `wwa.{slug}.codiris.app` subdomain. Always check the registry first:
+
+```bash
+SLUG="{brand}"  # e.g. "dior", "ralphlauren", "stripe"
+
+curl -s -o /tmp/claim.json -w "%{http_code}\n" "https://codiris.app/api/wwa/registry/$SLUG"
+cat /tmp/claim.json
+```
+
+- **HTTP 404** — slug is free. Continue to Step 4.1.
+- **HTTP 200** — slug is already claimed. Read `entry.owner` and `entry.deployed_url`. Options:
+  1. If you are the owner, keep deploying (you'll update the existing site).
+  2. If not, pick a suffix: `wwa.dior-<yourname>.codiris.app`, `wwa.dior-eu.codiris.app`, or `wwa.dior-2026.codiris.app`. Update `brand-config.ts` `mcpUrl` + the deploy domain accordingly.
+  3. If you need the base slug, open a PR to `public/wwa-registry.json` in the `wwwtowwa` repo requesting a transfer — the current owner reviews.
+
+**Never deploy over someone else's slug silently.** The registry is the source of truth — update it after a successful first deploy by opening a PR that adds your entry:
+
+```json
+{
+  "slug": "{brand}",
+  "domain": "{brand}.com",
+  "deployed_url": "https://wwa.{brand}.codiris.app",
+  "mcp_url": "https://wwa.{brand}.codiris.app/mcp",
+  "type": "{luxury-french|luxury-heritage|fintech|saas|ecommerce|consumer}",
+  "color": "{brand primary hex}",
+  "first_claimed_at": "YYYY-MM-DD",
+  "owner": "{your-handle}"
+}
+```
+
 ### Step 4.1: Build
 ```bash
 npm run build
