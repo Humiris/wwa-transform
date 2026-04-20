@@ -110,26 +110,33 @@ export class GeminiLiveClient {
           speech_config: { voice_config: { prebuilt_voice_config: { voice_name: "Puck" } } },
           thinking_config: { thinking_level: "minimal" }
         },
+        // TEMPLATE NOTE: the example IDs in these tool descriptions are a MASSIVE signal to
+        // Gemini Live about what valid IDs look like. When you transform for a new brand you
+        // MUST replace the example IDs below with real ids from your brand's cards.ts and
+        // solutions.ts. Leaving the default "chase-sapphire-preferred" example on a luxury or
+        // SaaS brand causes Gemini to either refuse to call the tool, or call it with made-up
+        // card IDs that don't exist in productItems — the left panel stays empty during the
+        // voice call. See SKILL.md "Known template residues".
         tools: [{
           function_declarations: [
             {
               name: "show_card",
-              description: "Display a product card on the screen for the user to see.",
+              description: "Display a specific product on the user's screen. Call this IMMEDIATELY when the user asks to see/show/browse/compare anything in the catalog. The id must be one of the AVAILABLE PRODUCTS listed in the system instruction.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  card_id: { type: "STRING", description: "The card ID (e.g., 'chase-sapphire-preferred')" }
+                  card_id: { type: "STRING", description: "The product id from the AVAILABLE PRODUCTS list. TEMPLATE: replace this example with a real id from your brand's cards.ts (e.g., 'jadore-edp' for Dior, 'chase-sapphire-preferred' for Visa, 'stripe-payments' for Stripe)." }
                 },
                 required: ["card_id"]
               }
             },
             {
               name: "show_solution",
-              description: "Display a solution on the screen.",
+              description: "Display a collection or solution on the user's screen. Call this when the user asks about a category, line, or broader product family.",
               parameters: {
                 type: "OBJECT",
                 properties: {
-                  solution_id: { type: "STRING", description: "The solution ID (e.g., 'tap-to-pay', 'solution-a')" }
+                  solution_id: { type: "STRING", description: "The solution/collection id from the AVAILABLE COLLECTIONS list. TEMPLATE: replace this example with a real id from your brand's solutions.ts (e.g., 'cruise-2026' for Dior, 'tap-to-pay' for Visa, 'payments' for Stripe)." }
                 },
                 required: ["solution_id"]
               }

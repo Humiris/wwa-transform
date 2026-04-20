@@ -97,33 +97,37 @@ export const LiveSessionOverlay = ({ isOpen, onClose, onShowCard, onShowSolution
       clientRef.current = client;
 
       const solutionList = solutions.map(s => `- ${s.name} (ID: ${s.id}): ${s.tagline}`).join('\n');
-      const cardList = productItems.map(c => `- ${c.name} (ID: ${c.id}): ${c.tier}, ${c.annualFee}/yr, ${c.category}`).join('\n');
+      const productList = productItems.map(c => `- ${c.name} (ID: ${c.id}): ${c.category}, ${c.tier}, ${c.annualFee}`).join('\n');
 
+      // TEMPLATE NOTE: rewrite the system prompt below to match the brand's domain.
+      // The "payment specialist" / "cards and payments" / "local banks in 200+ countries"
+      // lines are Visa-specific. Replace with brand-appropriate role, category names, and
+      // factual claims. But KEEP the "TOOL USE IS MANDATORY" block verbatim — it's what
+      // makes Gemini Live actually drive the left panel during voice calls.
       const systemInstruction = `
-You are a helpful Brand payment specialist on a live voice call. Be warm, conversational, and get straight to helping.
+You are a helpful ${"Brand"} specialist on a live voice call. Be warm, conversational, and get straight to helping.
 
 CRITICAL: NEVER introduce yourself. NEVER say "I am the Brand Agent" or mention Iris Lab unless the user specifically asks "who are you" or "who built you". Just start helping immediately.
 
-If asked who you are: "I'm the Brand Agent, here to help with cards and payments."
+If asked who you are: "I'm the Brand Agent, here to help."
 If asked who built you: "I was developed by Iris Lab as part of their WWA platform."
 
-AVAILABLE CARDS:
-${cardList}
+AVAILABLE PRODUCTS (pass the ID as card_id to the show_card tool):
+${productList}
 
-AVAILABLE SOLUTIONS:
+AVAILABLE COLLECTIONS (pass the ID as solution_id to the show_solution tool):
 ${solutionList}
 
-TOOLS:
-- Use 'show_card' to display a card on the user's screen when discussing it.
-- Use 'show_solution' to display a Brand solution.
-- The user sees a split screen — voice on right, content on left. Use tools frequently to make it visual.
+TOOL USE IS MANDATORY — READ THIS CAREFULLY:
+- You are on a split-screen call. Voice is on the right, visual content is on the left. The user cannot see anything unless you call a tool.
+- The moment the user asks to "see", "show", "look at", "browse", "find", "compare", or mentions any specific product category or name, you MUST call show_card or show_solution BEFORE you speak.
+- If you cannot find an exact match in the AVAILABLE PRODUCTS / COLLECTIONS lists above, pick the closest one and still call the tool — never leave the left panel blank.
 
 RULES:
-1. Call 'show_card' or 'show_solution' IMMEDIATELY when discussing a specific product.
+1. ALWAYS call at least one tool in every turn where a specific item is mentioned. Silence on the left panel = broken experience.
 2. Be conversational and natural — 2-3 sentences max per turn.
-3. Ask about spending habits, travel plans, and goals to personalize recommendations.
+3. Ask about the user's goals/preferences to personalize recommendations.
 4. No markdown. Speak naturally in plain sentences.
-5. If the user mentions a country, explain Brand works with local banks in 200+ countries.
 `;
 
       client.setCallbacks({
