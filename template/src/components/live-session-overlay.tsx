@@ -3,15 +3,15 @@
 /**
  * LiveSessionOverlay — Gemini Live voice-call UI.
  *
- * TEMPLATE NOTE: contains two inline SVG references to the Visa wordmark
- * (header + animated center). For any non-Visa brand you MUST either:
- *  - Replace the inline <svg> blocks with <img src={BRAND.logoImage} />, or
- *  - Swap the SVG <path d="..."> data for the brand's wordmark path.
- * Otherwise the voice call opens with a "Visa" logo on top of your brand.
- * See SKILL.md "Known template residues".
+ * TEMPLATE NOTE: the brand logo now renders via <img src={BRAND.logoImage}>
+ * in both the header and the animated center. Ensure brand-config.ts sets
+ * logoImage to a real path (PNG/SVG/WEBP) for your brand — the template
+ * ships with "/images/brand-logo.png" as the default. See SKILL.md
+ * "Known template residues" for the full first-frame-logo checklist.
  */
 
 import React, { useState, useEffect, useRef } from "react";
+import { BRAND } from "@/lib/brand-config";
 import { X, Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -229,10 +229,8 @@ RULES:
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <svg viewBox="0 0 1000 324" fill="currentColor" className="text-white w-5 h-3">
-              <path d="M 413.58 1.58 L 311.01 322.38 L 255.72 322.38 L 204.73 52.56 C 201.87 39.32 199.37 34.53 189.23 29.02 C 172.72 20.14 145.51 11.83 121.62 6.61 L 122.88 1.58 L 223.3 1.58 C 236.26 1.58 247.77 10.17 250.76 25.14 L 276.07 160.11 L 330.8 1.58 L 413.58 1.58 Z M 748.96 217.49 C 749.29 127.03 625.29 122.14 626.17 81.29 C 626.44 69.58 637.55 57.12 661.8 54.01 C 673.83 52.48 706.34 51.24 743.31 68.19 L 758.1 6.04 C 738.25 -0.89 713.13 -7.55 682.53 -7.55 C 604.54 -7.55 550.03 33.42 549.6 92.89 C 549.1 137.67 589.48 162.53 620.15 177.35 C 651.79 192.51 662.39 202.21 662.26 215.66 C 662.01 236.1 637.94 245.17 615.46 245.52 C 574.53 246.13 550.77 234.6 531.59 225.85 L 516.37 289.99 C 535.69 298.63 572.68 306.11 611.08 306.46 C 694.12 306.46 748.71 266.03 748.96 217.49 Z M 891.33 322.38 L 963.17 322.38 L 900.24 1.58 L 835.6 1.58 C 824.11 1.58 814.42 8.78 810.29 19.2 L 693.87 322.38 L 776.85 322.38 L 793.32 275.67 L 894.17 275.67 L 891.33 322.38 Z M 814.62 213.62 L 856.32 99.29 L 880.55 213.62 L 814.62 213.62 Z M 514.7 1.58 L 449.94 322.38 L 371.08 322.38 L 435.88 1.58 L 514.7 1.58 Z" />
-            </svg>
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
+            <img src={BRAND.logoImage} alt={BRAND.name} className="w-5 h-5 object-contain" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-white">Live Session</h2>
@@ -272,15 +270,16 @@ RULES:
               {(isCameraOn || isScreenSharing) ? (
                 <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#1A1F71]/20 to-[#0d1020]">
+                <div
+                  className="w-full h-full flex items-center justify-center"
+                  style={{ background: `linear-gradient(to bottom, ${BRAND.primaryColor}33, #0d1020)` }}
+                >
                   <motion.div
                     animate={{ scale: isAiTalking ? [1, 1.08, 1] : 1, opacity: isAiTalking ? [0.6, 1, 0.6] : 0.4 }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="w-20 h-14 text-white/20"
+                    className="w-24 h-24 flex items-center justify-center"
                   >
-                    <svg viewBox="0 0 1000 324" fill="currentColor" className="w-full h-full">
-                      <path d="M 413.58 1.58 L 311.01 322.38 L 255.72 322.38 L 204.73 52.56 C 201.87 39.32 199.37 34.53 189.23 29.02 C 172.72 20.14 145.51 11.83 121.62 6.61 L 122.88 1.58 L 223.3 1.58 C 236.26 1.58 247.77 10.17 250.76 25.14 L 276.07 160.11 L 330.8 1.58 L 413.58 1.58 Z M 748.96 217.49 C 749.29 127.03 625.29 122.14 626.17 81.29 C 626.44 69.58 637.55 57.12 661.8 54.01 C 673.83 52.48 706.34 51.24 743.31 68.19 L 758.1 6.04 C 738.25 -0.89 713.13 -7.55 682.53 -7.55 C 604.54 -7.55 550.03 33.42 549.6 92.89 C 549.1 137.67 589.48 162.53 620.15 177.35 C 651.79 192.51 662.39 202.21 662.26 215.66 C 662.01 236.1 637.94 245.17 615.46 245.52 C 574.53 246.13 550.77 234.6 531.59 225.85 L 516.37 289.99 C 535.69 298.63 572.68 306.11 611.08 306.46 C 694.12 306.46 748.71 266.03 748.96 217.49 Z M 891.33 322.38 L 963.17 322.38 L 900.24 1.58 L 835.6 1.58 C 824.11 1.58 814.42 8.78 810.29 19.2 L 693.87 322.38 L 776.85 322.38 L 793.32 275.67 L 894.17 275.67 L 891.33 322.38 Z M 814.62 213.62 L 856.32 99.29 L 880.55 213.62 L 814.62 213.62 Z M 514.7 1.58 L 449.94 322.38 L 371.08 322.38 L 435.88 1.58 L 514.7 1.58 Z" />
-                    </svg>
+                    <img src={BRAND.logoImage} alt={BRAND.name} className="w-full h-full object-contain opacity-80" />
                   </motion.div>
                 </div>
               )}

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { BRAND } from "@/lib/brand-config";
 
 export interface Address {
   id: string;
@@ -44,7 +45,7 @@ function loadProfile(): { isSignedIn: boolean; profile: UserProfile } {
 }
 
 const save = (profile: UserProfile) => {
-  if (typeof window !== "undefined") localStorage.setItem("visa-user", JSON.stringify(profile));
+  if (typeof window !== "undefined") localStorage.setItem("wwa-user", JSON.stringify(profile));
 };
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -58,7 +59,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   signOut: () => {
     set({ isSignedIn: false, profile: EMPTY_PROFILE });
-    if (typeof window !== "undefined") localStorage.removeItem("visa-user");
+    if (typeof window !== "undefined") localStorage.removeItem("wwa-user");
   },
 
   updateProfile: (fields) => {
@@ -107,7 +108,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
 export function hydrateUserStore() {
   if (typeof window === "undefined") return;
   try {
-    const saved = localStorage.getItem("visa-user");
+    const saved = localStorage.getItem("wwa-user");
     if (saved) {
       const parsed = JSON.parse(saved);
       useUserStore.setState({ isSignedIn: true, profile: { ...EMPTY_PROFILE, ...parsed } });
@@ -125,7 +126,7 @@ export function fakeGoogleSignIn(): Promise<Partial<UserProfile>> {
         email: "joel@example.com",
         phone: "(555) 987-6543",
         income: "300,000",
-        avatar: "https://ui-avatars.com/api/?name=Joel+User&background=1A1F71&color=fff&size=128",
+        avatar: `https://ui-avatars.com/api/?name=Joel+User&background=${BRAND.primaryColor.replace("#", "")}&color=fff&size=128`,
         addresses: [
           { id: "addr1", label: "Home", street: "123 Main Street", city: "San Francisco", state: "CA", zip: "94102", country: "US", isDefault: true },
         ],

@@ -16,6 +16,7 @@ import { BookDemoModal } from "@/components/book-demo-modal";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Solution, solutions } from "@/lib/solutions";
 import { productItems } from "@/lib/cards";
+import { BRAND } from "@/lib/brand-config";
 import { cn } from "@/lib/utils";
 import { CreditCard, ChevronRight } from "lucide-react";
 
@@ -207,24 +208,22 @@ export default function Home() {
           <button
             onClick={() => setActiveTab("discovery")}
             className={cn(
-              "flex-1 py-3 text-sm font-medium transition-colors",
-              activeTab === "discovery"
-                ? "text-neutral-900 border-b-2 border-[#1A1F71]"
-                : "text-neutral-400"
+              "flex-1 py-3 text-sm font-medium transition-colors border-b-2",
+              activeTab === "discovery" ? "text-neutral-900" : "text-neutral-400 border-transparent"
             )}
+            style={activeTab === "discovery" ? { borderBottomColor: BRAND.primaryColor } : undefined}
           >
             Discovery
           </button>
           <button
             onClick={() => setActiveTab("chat")}
             className={cn(
-              "flex-1 py-3 text-sm font-medium transition-colors",
-              activeTab === "chat"
-                ? "text-neutral-900 border-b-2 border-[#1A1F71]"
-                : "text-neutral-400"
+              "flex-1 py-3 text-sm font-medium transition-colors border-b-2",
+              activeTab === "chat" ? "text-neutral-900" : "text-neutral-400 border-transparent"
             )}
+            style={activeTab === "chat" ? { borderBottomColor: BRAND.primaryColor } : undefined}
           >
-            Brand Agent
+            {BRAND.agentName}
           </button>
         </div>
       )}

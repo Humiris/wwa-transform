@@ -21,6 +21,7 @@ import React, { useState } from "react";
 import { X, CheckCircle, Building2, User, Mail, Briefcase, Globe, DollarSign, Users, MessageSquare, ArrowRight, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/lib/user-store";
+import { BRAND } from "@/lib/brand-config";
 
 interface BookDemoModalProps {
   isOpen: boolean;
@@ -176,13 +177,11 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
                   <X className="w-5 h-5" />
                 </button>
                 <div className="flex items-center gap-3 mb-3">
-                  <svg viewBox="0 0 1000 324" width="48" height="16" fill="none">
-                    <path d="M 413.58 1.58 L 311.01 322.38 L 255.72 322.38 L 204.73 52.56 C 201.87 39.32 199.37 34.53 189.23 29.02 C 172.72 20.14 145.51 11.83 121.62 6.61 L 122.88 1.58 L 223.3 1.58 C 236.26 1.58 247.77 10.17 250.76 25.14 L 276.07 160.11 L 330.8 1.58 L 413.58 1.58 Z M 748.96 217.49 C 749.29 127.03 625.29 122.14 626.17 81.29 C 626.44 69.58 637.55 57.12 661.8 54.01 C 673.83 52.48 706.34 51.24 743.31 68.19 L 758.1 6.04 C 738.25 -0.89 713.13 -7.55 682.53 -7.55 C 604.54 -7.55 550.03 33.42 549.6 92.89 C 549.1 137.67 589.48 162.53 620.15 177.35 C 651.79 192.51 662.39 202.21 662.26 215.66 C 662.01 236.1 637.94 245.17 615.46 245.52 C 574.53 246.13 550.77 234.6 531.59 225.85 L 516.37 289.99 C 535.69 298.63 572.68 306.11 611.08 306.46 C 694.12 306.46 748.71 266.03 748.96 217.49 Z M 891.33 322.38 L 963.17 322.38 L 900.24 1.58 L 835.6 1.58 C 824.11 1.58 814.42 8.78 810.29 19.2 L 693.87 322.38 L 776.85 322.38 L 793.32 275.67 L 894.17 275.67 L 891.33 322.38 Z M 814.62 213.62 L 856.32 99.29 L 880.55 213.62 L 814.62 213.62 Z M 514.7 1.58 L 449.94 322.38 L 371.08 322.38 L 435.88 1.58 L 514.7 1.58 Z" fill="white"/>
-                  </svg>
+                  <img src={BRAND.logoImage} alt={BRAND.name} className="h-5 w-auto object-contain brightness-0 invert" />
                 </div>
-                <h2 className="text-white text-lg font-semibold">Contact Us Sales</h2>
+                <h2 className="text-white text-lg font-semibold">Contact {BRAND.name}</h2>
                 <p className="text-white/70 text-xs mt-1">
-                  Learn about Enterprise Payment Technology Solutions and explore new offerings.
+                  Learn about our solutions and explore new offerings.
                 </p>
                 {/* Step indicator */}
                 <div className="flex items-center gap-2 mt-4">

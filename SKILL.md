@@ -199,9 +199,19 @@ curl -L -o "public/images/{name}.jpg" "{url}" \
 
 ### Image Source Priority (USE IN THIS ORDER)
 
-Most premium brand sites (Dior, Apple, Notion, Vercel, Hermès) AGGRESSIVELY BLOCK curl. Do NOT waste time trying to download from the brand's CDN. Skip directly to the fallback:
+Most premium brand sites (Dior, Apple, Notion, Vercel, Hermès) AGGRESSIVELY BLOCK curl. Do NOT waste time trying to download from the brand's CDN. Skip directly to the fallback.
 
-**1. Brand's own CDN** (only works for ~30% of sites — try once, move on if blocked)
+**Sportswear is the big exception** — Puma, Nike, Adidas, Asics, Under Armour, New Balance, Reebok almost always serve real JPEGs on their public CDNs without any bot-blocking. Always try the brand CDN **first** for a sportswear transform. Verified patterns:
+
+| Brand | CDN pattern | How to get the `{styleId}` |
+|-------|-------------|----------------------------|
+| Puma | `https://images.puma.com/image/upload/f_auto,q_auto,w_800,h_800/global/{styleId}/01/sv01/fnd/PNA/fmt/png/{slug}` | The number after `/pd/slug/` on a product page |
+| Nike | `https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/{hash}/{slug}.jpg` | Inspect a product page's `<img srcset>` |
+| Adidas | `https://assets.adidas.com/images/w_600,f_auto,q_auto/{styleId}/{slug}.jpg` | Product URL's trailing `{slug}.html` + style code panel |
+
+Always include `-H "Referer: https://{brand-domain}/"` — the Cloudinary-style CDNs behind most sportswear brands accept the request with referrer, 404 it without.
+
+**1. Brand's own CDN** (always try first for sportswear/athletic; ~30% of premium luxury sites; skip straight to #3 for most editorial/luxury brands)
 ```bash
 curl -sL -o public/images/{name}.jpg "{url}" \
   -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" \
@@ -325,7 +335,29 @@ curl -sL -o public/images/saas-ui.jpg "https://images.unsplash.com/photo-1551288
 
 # Abstract tech / code
 curl -sL -o public/images/tech.jpg "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# ═══════ ATHLETIC / SPORTSWEAR (verified on Puma transform) ═══════
+
+# Running / runner silhouette
+curl -sL -o public/images/running.jpg "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Training / gym / lifting
+curl -sL -o public/images/training.jpg "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Football / soccer
+curl -sL -o public/images/football.jpg "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Motorsport / racing
+curl -sL -o public/images/motorsport.jpg "https://images.unsplash.com/photo-1504276048855-f3d60e69632f?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Kids athletic
+curl -sL -o public/images/kids.jpg "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800&q=80" -H "User-Agent: Mozilla/5.0"
+
+# Athletic fashion / streetwear runner
+curl -sL -o public/images/athleisure.jpg "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80" -H "User-Agent: Mozilla/5.0"
 ```
+
+> **Unsplash ID format caveat:** stick to the timestamp-hex pattern (`photo-1508685096489-7aacd43bd3b1`). Modern Unsplash URLs use slug-style IDs (`hEIHXXic3yI`) that **do NOT work** with `https://images.unsplash.com/photo-{slug}`. If an ID you find is 11 random characters instead of the classic timestamp-hex form, you need the old numeric pattern or the image will 404.
 
 **Verify downloads:** Check file size with `ls -la`. Files under 1KB are failures. Failed downloads return ~29 bytes (Unsplash not-found) or ~300 bytes (error page). Re-download with different ID if under 1KB.
 
@@ -640,7 +672,8 @@ These files ship in the template with Visa-shaped placeholders that the ordinary
 
 | File | What to scrub |
 |------|---------------|
-| `src/components/book-demo-modal.tsx` | Ships with B2B fields (CompanySize, AnnualRevenue, Country dropdown, SKU picker). For luxury / e-commerce brands, rewrite as "Request a Private Appointment" per the luxury pattern above. For SaaS keep B2B but relabel products. For consumer, replace entirely with a newsletter/contact form. The hero's main CTA opens this modal — an untouched modal ships the wrong form on the most-clicked button. |
+| `src/components/book-demo-modal.tsx` | Ships with B2B fields (CompanySize, AnnualRevenue, Country dropdown, SKU picker) AND an inline Visa wordmark SVG in the header. For luxury / e-commerce brands, rewrite as "Request a Private Appointment" per the luxury pattern above. For SaaS keep B2B but relabel products. For consumer, replace entirely with a newsletter/contact form. In all cases, replace the header SVG with `<img src={BRAND.logoImage} className="brightness-0 invert" />`. The hero's main CTA opens this modal — an untouched modal ships the wrong form and the wrong logo on the most-clicked button. |
+| `src/components/assistant-shared.tsx` EmptyState | The welcome-screen logo is **the call button** (clicking it starts the voice call). Ships with an inline Visa wordmark SVG — which means the FIRST FRAME a customer sees before any interaction shows a Visa logo. Replace the `<svg><path d="..." /></svg>` inside the EmptyState button with `<img src={BRAND.logoImage} alt={BRAND.name} />`. Without this fix, every brand transform launches on a Visa logo. |
 | `src/components/live-session-overlay.tsx` | Two inline SVG references render the Visa wordmark in the voice-call overlay (header + animated center). Replace with `<img src={BRAND.logoImage} alt={BRAND.name} />` or swap the SVG path — otherwise the voice call shows Visa. Also rewrite the system-prompt text (role, CTAs, "local banks in 200+ countries") per brand, BUT keep the "TOOL USE IS MANDATORY" block verbatim — it's what makes Gemini Live actually drive the left panel. |
 | `src/lib/gemini-live-client.ts` | The `show_card` / `show_solution` tool descriptions include example IDs (`'chase-sapphire-preferred'`, `'tap-to-pay'`). Gemini Live reads these as strong hints about what valid IDs look like. If you leave them unchanged on a non-Visa brand, the voice call will refuse to invoke the tools or will call them with made-up IDs — and the left panel stays empty during the call. Replace both example IDs with real ids from your brand's `cards.ts` / `solutions.ts` (e.g. `'jadore-edp'`, `'cruise-2026'`). This is the single most common reason voice calls "just talk" without updating the visible panel. |
 | `src/components/agent-panel.tsx` | The mock API key uses the prefix `vsk_live_` (Visa-derived). Change to a brand-neutral `api_live_` or a brand-specific prefix (`hsk_`, `drk_`, etc). Runs through `Math.random().toString(36)` — easy to miss. |
