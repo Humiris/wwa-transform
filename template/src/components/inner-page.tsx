@@ -26,7 +26,7 @@ const PersonalPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardCli
     <FadeIn>
       <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
         <img src="/images/gift-cards.jpg" alt="Products" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/80 to-transparent" />
         <div className="absolute bottom-8 left-8 text-white">
           <p className="text-xs uppercase tracking-widest text-white/60 mb-2">Personal</p>
           <h1 className="text-3xl md:text-4xl font-semibold">Make moves that matter</h1>
@@ -39,7 +39,7 @@ const PersonalPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardCli
       <h2 className="text-2xl font-semibold text-neutral-900 mb-6">Find your card</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {[
-          { label: "Credit Cards", ids: productItems.map(c => c.id), color: "from-[#1A1F71] to-[#1434CB]", icon: CreditCard },
+          { label: "Credit Cards", ids: productItems.map(c => c.id), color: "from-[var(--color-brand-primary)] to-[var(--color-brand-accent)]", icon: CreditCard },
           { label: "Travel Cards", ids: productItems.filter(c => c.category === "Travel").map(c => c.id), color: "from-blue-500 to-indigo-600", icon: Plane },
           { label: "Cash Back", ids: productItems.filter(c => c.category === "Cash Back").map(c => c.id), color: "from-green-500 to-emerald-600", icon: Zap },
           { label: "Business", ids: productItems.filter(c => c.category === "Business").map(c => c.id), color: "from-purple-500 to-violet-600", icon: Building2 },
@@ -72,9 +72,9 @@ const PersonalPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardCli
             const tierKey = tier.name.toLowerCase().replace("visa ", "");
             const cards = productItems.filter(c => c.tier.toLowerCase().includes(tierKey));
             onCardClick?.(cards.length > 0 ? cards.map(c => c.id) : productItems.map(c => c.id), `${tier.name} Cards`);
-          }} className="rounded-2xl border border-neutral-200 bg-white p-5 text-left hover:shadow-md hover:border-[#1A1F71]/20 hover:-translate-y-1 transition-all group">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#1A1F71]/50 mb-1">{tier.benefits}</p>
-            <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-[#1A1F71] mb-2">{tier.name}</h3>
+          }} className="rounded-2xl border border-neutral-200 bg-white p-5 text-left hover:shadow-md hover:border-[var(--color-brand-primary)]/20 hover:-translate-y-1 transition-all group">
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-brand-primary)]/50 mb-1">{tier.benefits}</p>
+            <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-[var(--color-brand-primary)] mb-2">{tier.name}</h3>
             <p className="text-xs text-neutral-500">{tier.desc}</p>
           </button>
         ))}
@@ -89,7 +89,7 @@ const BusinessPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["o
     <FadeIn>
       <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
         <img src="/images/laptop.jpg" alt="Business" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/80 to-transparent" />
         <div className="absolute bottom-8 left-8 text-white">
           <p className="text-xs uppercase tracking-widest text-white/60 mb-2">Business</p>
           <h1 className="text-3xl md:text-4xl font-semibold">Innovation that drives business</h1>
@@ -102,15 +102,15 @@ const BusinessPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["o
       <h2 className="text-2xl font-semibold text-neutral-900 mb-6">Business solutions</h2>
       <div className="grid gap-4">
         {solutions.filter(s => ["solution-a", "solution-b", "solution-c"].includes(s.id)).map(sol => (
-          <button key={sol.id} onClick={() => onSolutionClick?.(sol.id)} className="flex gap-5 rounded-2xl border border-neutral-200 bg-white p-5 text-left hover:shadow-md hover:border-[#1A1F71]/20 transition-all group">
+          <button key={sol.id} onClick={() => onSolutionClick?.(sol.id)} className="flex gap-5 rounded-2xl border border-neutral-200 bg-white p-5 text-left hover:shadow-md hover:border-[var(--color-brand-primary)]/20 transition-all group">
             <div className="w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0">
               <img src={sol.image} alt={sol.name} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
-              <h3 className="text-base font-semibold text-neutral-900 group-hover:text-[#1A1F71]">{sol.name}</h3>
+              <h3 className="text-base font-semibold text-neutral-900 group-hover:text-[var(--color-brand-primary)]">{sol.name}</h3>
               <p className="text-xs text-neutral-500 mt-1">{sol.tagline}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-[#1A1F71] mt-1" />
+            <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-[var(--color-brand-primary)] mt-1" />
           </button>
         ))}
       </div>
@@ -126,7 +126,7 @@ const BusinessPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["o
           { icon: Code, title: "Developer APIs", desc: "REST APIs for payments, fraud detection, and fund transfers" },
         ].map(f => (
           <div key={f.title} className="rounded-2xl border border-neutral-200 bg-white p-4">
-            <f.icon className="w-5 h-5 text-[#1A1F71] mb-3" />
+            <f.icon className="w-5 h-5 text-[var(--color-brand-primary)] mb-3" />
             <h4 className="text-sm font-semibold text-neutral-900 mb-1">{f.title}</h4>
             <p className="text-xs text-neutral-500">{f.desc}</p>
           </div>
@@ -135,16 +135,16 @@ const BusinessPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["o
     </FadeIn>
 
     <FadeIn delay={0.3}>
-      <div className="rounded-3xl overflow-hidden border border-neutral-200 bg-gradient-to-r from-[#0d1147] to-[#1A1F71] p-6 md:p-8">
+      <div className="rounded-3xl overflow-hidden border border-neutral-200 bg-gradient-to-r from-[#0d1147] to-[var(--color-brand-primary)] p-6 md:p-8">
         <div className="flex gap-5 items-start">
           <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-white/10">
             <img src="/images/agentic-commerce.jpg" alt="Agentic Commerce" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 space-y-2">
-            <span className="text-[10px] uppercase tracking-widest text-[#F7B600] font-bold">New</span>
+            <span className="text-[10px] uppercase tracking-widest text-[var(--color-brand-secondary)] font-bold">New</span>
             <h3 className="text-lg font-semibold text-white">Agentic Commerce</h3>
             <p className="text-xs text-white/60">When AI becomes the customer. Brand is building the infrastructure for autonomous AI agent transactions with the Trusted Agent Protocol and MCP Server for Intelligent Commerce.</p>
-            <button onClick={() => onSolutionClick?.("agentic-commerce")} className="text-xs font-semibold text-[#F7B600] hover:text-white transition-colors flex items-center gap-1">
+            <button onClick={() => onSolutionClick?.("agentic-commerce")} className="text-xs font-semibold text-[var(--color-brand-secondary)] hover:text-white transition-colors flex items-center gap-1">
               Book a demo <ChevronRight className="w-3 h-3" />
             </button>
           </div>
@@ -160,7 +160,7 @@ const TravelPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardClick
     <FadeIn>
       <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
         <img src="/images/traveler-boat.jpg" alt="Travel" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/80 to-transparent" />
         <div className="absolute bottom-8 left-8 text-white">
           <p className="text-xs uppercase tracking-widest text-white/60 mb-2">Travel</p>
           <h1 className="text-3xl md:text-4xl font-semibold">Travel with confidence</h1>
@@ -181,7 +181,7 @@ const TravelPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardClick
           { title: "Luggage Locator", desc: "Track lost bags", icon: Shield },
         ].map(s => (
           <div key={s.title} className="rounded-2xl border border-neutral-200 bg-white p-4">
-            <s.icon className="w-5 h-5 text-[#1A1F71] mb-2" />
+            <s.icon className="w-5 h-5 text-[var(--color-brand-primary)] mb-2" />
             <h4 className="text-sm font-semibold text-neutral-900">{s.title}</h4>
             <p className="text-xs text-neutral-500">{s.desc}</p>
           </div>
@@ -191,7 +191,7 @@ const TravelPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardClick
 
     <FadeIn delay={0.2}>
       <h2 className="text-2xl font-semibold text-neutral-900 mb-4">Travel cards</h2>
-      <Button onClick={() => onCardClick?.(productItems.filter(c => c.category === "Travel").map(c => c.id), "Travel Cards")} className="rounded-full bg-[#1A1F71] text-white px-6 py-5">
+      <Button onClick={() => onCardClick?.(productItems.filter(c => c.category === "Travel").map(c => c.id), "Travel Cards")} className="rounded-full bg-[var(--color-brand-primary)] text-white px-6 py-5">
         Browse Travel Cards <ChevronRight className="w-4 h-4 ml-1" />
       </Button>
     </FadeIn>
@@ -208,8 +208,8 @@ const TravelPage = ({ onCardClick }: { onCardClick?: InnerPageProps["onCardClick
           "Keep copies of all card numbers",
         ].map((tip, i) => (
           <div key={i} className="flex items-start gap-3 rounded-xl bg-white border border-neutral-200 p-3">
-            <div className="w-6 h-6 rounded-full bg-[#1A1F71]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-xs font-bold text-[#1A1F71]">{i + 1}</span>
+            <div className="w-6 h-6 rounded-full bg-[var(--color-brand-primary)]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-xs font-bold text-[var(--color-brand-primary)]">{i + 1}</span>
             </div>
             <p className="text-sm text-neutral-700">{tip}</p>
           </div>
@@ -225,7 +225,7 @@ const SecurityPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["o
     <FadeIn>
       <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
         <img src="/images/security-phones.jpg" alt="Security" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/80 to-transparent" />
         <div className="absolute bottom-8 left-8 text-white">
           <p className="text-xs uppercase tracking-widest text-white/60 mb-2">Security</p>
           <h1 className="text-3xl md:text-4xl font-semibold">Every tap protected</h1>
@@ -243,12 +243,12 @@ const SecurityPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["o
           { icon: Smartphone, title: "Purchase Alerts", desc: "Real-time notifications for transactions, thresholds, international purchases, and declines." },
           { icon: Globe, title: "Solution D", desc: "Tokenized online checkout — no card details entered at merchant sites.", action: () => onSolutionClick?.("click-to-pay") },
         ].map(f => (
-          <button key={f.title} onClick={f.action} className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-5 text-left hover:shadow-md hover:border-[#1A1F71]/20 transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-[#1A1F71]/10 flex items-center justify-center flex-shrink-0">
-              <f.icon className="w-5 h-5 text-[#1A1F71]" />
+          <button key={f.title} onClick={f.action} className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-5 text-left hover:shadow-md hover:border-[var(--color-brand-primary)]/20 transition-all group">
+            <div className="w-10 h-10 rounded-xl bg-[var(--color-brand-primary)]/10 flex items-center justify-center flex-shrink-0">
+              <f.icon className="w-5 h-5 text-[var(--color-brand-primary)]" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-neutral-900 group-hover:text-[#1A1F71]">{f.title}</h4>
+              <h4 className="text-sm font-semibold text-neutral-900 group-hover:text-[var(--color-brand-primary)]">{f.title}</h4>
               <p className="text-xs text-neutral-500 mt-1">{f.desc}</p>
             </div>
           </button>
@@ -283,8 +283,8 @@ const DeveloperPage = ({ onSolutionClick }: { onSolutionClick?: InnerPageProps["
           { title: "Token Service", desc: "Replace card numbers with secure digital tokens", icon: Lock },
         ].map(api => (
           <div key={api.title} className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-5">
-            <div className="w-10 h-10 rounded-xl bg-[#1A1F71]/10 flex items-center justify-center flex-shrink-0">
-              <api.icon className="w-5 h-5 text-[#1A1F71]" />
+            <div className="w-10 h-10 rounded-xl bg-[var(--color-brand-primary)]/10 flex items-center justify-center flex-shrink-0">
+              <api.icon className="w-5 h-5 text-[var(--color-brand-primary)]" />
             </div>
             <div>
               <h4 className="text-sm font-semibold text-neutral-900">{api.title}</h4>
@@ -313,7 +313,7 @@ const AboutPage = () => (
     <FadeIn>
       <div className="relative rounded-3xl overflow-hidden h-64 md:h-80">
         <img src="/images/business-owner.jpg" alt="About Us" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/80 to-transparent" />
         <div className="absolute bottom-8 left-8 text-white">
           <p className="text-xs uppercase tracking-widest text-white/60 mb-2">About</p>
           <h1 className="text-3xl md:text-4xl font-semibold">About Us</h1>
@@ -329,7 +329,7 @@ const AboutPage = () => (
           { value: "150M+", label: "Merchants" },
           { value: "180", label: "Currencies" },
         ].map(s => (
-          <div key={s.label} className="rounded-2xl bg-[#1A1F71] p-5 text-center text-white">
+          <div key={s.label} className="rounded-2xl bg-[var(--color-brand-primary)] p-5 text-center text-white">
             <p className="text-2xl font-bold">{s.value}</p>
             <p className="text-xs text-white/60 mt-1">{s.label}</p>
           </div>

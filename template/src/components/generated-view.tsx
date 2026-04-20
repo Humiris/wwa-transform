@@ -85,7 +85,7 @@ export const GeneratedView = ({ code, title, model, onBack, onRegenerate }: Gene
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             >
-              <Sparkles className="w-8 h-8 text-[#1A1F71]" />
+              <Sparkles className="w-8 h-8 text-[var(--color-brand-primary)]" />
             </motion.div>
             <div className="text-center">
               <p className="text-sm font-medium text-neutral-900">Generating visualization...</p>

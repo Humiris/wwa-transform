@@ -169,7 +169,7 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
           ) : (
             <>
               {/* Header */}
-              <div className="relative bg-gradient-to-r from-[#1A1F71] to-[#1434CB] px-6 py-5">
+              <div className="relative bg-gradient-to-r from-[var(--color-brand-primary)] to-[var(--color-brand-accent)] px-6 py-5">
                 <button
                   onClick={handleClose}
                   className="absolute right-4 top-4 text-white/60 hover:text-white transition-colors"
@@ -190,7 +190,7 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
                       <div
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
                           step === s
-                            ? "bg-white text-[#1A1F71]"
+                            ? "bg-white text-[var(--color-brand-primary)]"
                             : step > s
                             ? "bg-white/30 text-white"
                             : "bg-white/10 text-white/40"
@@ -347,7 +347,7 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
                           onChange={(e) => update("message", e.target.value)}
                           rows={3}
                           placeholder="Tell us about your payment needs, challenges, or the solutions you'd like to explore..."
-                          className="w-full px-3 py-2.5 text-sm border border-neutral-200 rounded-xl bg-neutral-50 focus:bg-white focus:border-[#1A1F71] focus:ring-1 focus:ring-[#1A1F71]/20 outline-none transition-all resize-none placeholder:text-neutral-300"
+                          className="w-full px-3 py-2.5 text-sm border border-neutral-200 rounded-xl bg-neutral-50 focus:bg-white focus:border-[var(--color-brand-primary)] focus:ring-1 focus:ring-[var(--color-brand-primary)]/20 outline-none transition-all resize-none placeholder:text-neutral-300"
                         />
                       </div>
                       <label className="flex items-start gap-2.5 cursor-pointer group">
@@ -355,12 +355,12 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
                           type="checkbox"
                           checked={form.marketingOptIn}
                           onChange={(e) => update("marketingOptIn", e.target.checked)}
-                          className="mt-0.5 w-4 h-4 rounded border-neutral-300 text-[#1A1F71] focus:ring-[#1A1F71]/20 accent-[#1A1F71]"
+                          className="mt-0.5 w-4 h-4 rounded border-neutral-300 text-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]/20 accent-[var(--color-brand-primary)]"
                         />
                         <span className="text-[11px] text-neutral-400 leading-relaxed">
                           By checking this box, you agree to receive marketing communications
                           about Brand business products. View our{" "}
-                          <span className="text-[#1A1F71] hover:underline">
+                          <span className="text-[var(--color-brand-primary)] hover:underline">
                             Global Privacy Notice
                           </span>
                           .
@@ -387,7 +387,7 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
                   <button
                     onClick={() => setStep((s) => (s + 1) as 1 | 2 | 3)}
                     disabled={step === 1 ? !step1Valid : !step2Valid}
-                    className="flex items-center gap-2 bg-[#1A1F71] hover:bg-[#141963] disabled:bg-neutral-200 disabled:text-neutral-400 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all"
+                    className="flex items-center gap-2 bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] disabled:bg-neutral-200 disabled:text-neutral-400 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all"
                   >
                     Continue <ArrowRight className="w-4 h-4" />
                   </button>
@@ -395,7 +395,7 @@ export const BookDemoModal = ({ isOpen, onClose }: BookDemoModalProps) => {
                   <button
                     onClick={handleSubmit}
                     disabled={!step3Valid}
-                    className="flex items-center gap-2 bg-[#1A1F71] hover:bg-[#141963] disabled:bg-neutral-200 disabled:text-neutral-400 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all"
+                    className="flex items-center gap-2 bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] disabled:bg-neutral-200 disabled:text-neutral-400 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all"
                   >
                     Submit <ArrowRight className="w-4 h-4" />
                   </button>
@@ -437,7 +437,7 @@ function FormInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder || label.replace(" *", "")}
-        className="w-full px-3 py-2.5 text-sm border border-neutral-200 rounded-xl bg-neutral-50 focus:bg-white focus:border-[#1A1F71] focus:ring-1 focus:ring-[#1A1F71]/20 outline-none transition-all placeholder:text-neutral-300"
+        className="w-full px-3 py-2.5 text-sm border border-neutral-200 rounded-xl bg-neutral-50 focus:bg-white focus:border-[var(--color-brand-primary)] focus:ring-1 focus:ring-[var(--color-brand-primary)]/20 outline-none transition-all placeholder:text-neutral-300"
       />
     </div>
   );
@@ -470,7 +470,7 @@ function FormSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full px-3 py-2.5 text-sm border border-neutral-200 rounded-xl bg-neutral-50 focus:bg-white focus:border-[#1A1F71] focus:ring-1 focus:ring-[#1A1F71]/20 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
+        className="w-full px-3 py-2.5 text-sm border border-neutral-200 rounded-xl bg-neutral-50 focus:bg-white focus:border-[var(--color-brand-primary)] focus:ring-1 focus:ring-[var(--color-brand-primary)]/20 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
         style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
       >
         <option value="">{placeholder || "-- Please Select --"}</option>
@@ -504,21 +504,21 @@ function SuccessView({ onClose, name }: { onClose: () => void; name: string }) {
       <div className="bg-neutral-50 rounded-xl p-4 mb-6 text-left text-xs text-neutral-500 space-y-1.5">
         <p className="font-medium text-neutral-700 text-sm mb-2">What happens next?</p>
         <div className="flex items-start gap-2">
-          <span className="w-5 h-5 rounded-full bg-[#1A1F71]/10 text-[#1A1F71] flex items-center justify-center text-[10px] font-semibold shrink-0 mt-0.5">1</span>
+          <span className="w-5 h-5 rounded-full bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] flex items-center justify-center text-[10px] font-semibold shrink-0 mt-0.5">1</span>
           <span>Our team reviews your request and matches you with a specialist</span>
         </div>
         <div className="flex items-start gap-2">
-          <span className="w-5 h-5 rounded-full bg-[#1A1F71]/10 text-[#1A1F71] flex items-center justify-center text-[10px] font-semibold shrink-0 mt-0.5">2</span>
+          <span className="w-5 h-5 rounded-full bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] flex items-center justify-center text-[10px] font-semibold shrink-0 mt-0.5">2</span>
           <span>You'll receive a calendar invite for a personalized demo</span>
         </div>
         <div className="flex items-start gap-2">
-          <span className="w-5 h-5 rounded-full bg-[#1A1F71]/10 text-[#1A1F71] flex items-center justify-center text-[10px] font-semibold shrink-0 mt-0.5">3</span>
+          <span className="w-5 h-5 rounded-full bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] flex items-center justify-center text-[10px] font-semibold shrink-0 mt-0.5">3</span>
           <span>Get a tailored proposal for your business needs</span>
         </div>
       </div>
       <button
         onClick={onClose}
-        className="bg-[#1A1F71] hover:bg-[#141963] text-white text-sm font-semibold px-8 py-3 rounded-full transition-all"
+        className="bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] text-white text-sm font-semibold px-8 py-3 rounded-full transition-all"
       >
         Done
       </button>

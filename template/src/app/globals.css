@@ -41,9 +41,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  /* Brand palette tokens — overridden at build time from BRAND in brand-config.ts
-     (the component-level components read BRAND.primaryColor/secondaryColor/accentColor
-     directly; these tokens are kept for any CSS that needs them). */
+  /* Brand palette defaults. These are overridden at runtime by layout.tsx
+     using the real hex values from BRAND in brand-config.ts. The defaults
+     below are the "Brand" placeholder palette and are what you'd see if
+     layout.tsx failed to inject. */
   --color-brand-primary: #1A1F71;
   --color-brand-secondary: #F7B600;
   --color-brand-accent: #1434CB;

@@ -74,7 +74,7 @@ export const SolutionSlider = ({ onSelect }: SolutionSliderProps) => {
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                   />
                   <div className="absolute inset-x-5 bottom-5 rounded-3xl bg-white/95 backdrop-blur-sm px-7 py-6 text-left ring-1 ring-neutral-200">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#1A1F71]/50">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--color-brand-primary)]/50">
                       {solution.category}
                     </p>
                     <h3 className="mt-1 text-2xl font-semibold text-neutral-900">

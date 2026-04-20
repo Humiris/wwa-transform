@@ -104,7 +104,7 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
                     <motion.p
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="text-[14px] uppercase tracking-[0.25em] font-semibold text-[#1A1F71]/60 mb-3"
+                      className="text-[14px] uppercase tracking-[0.25em] font-semibold text-[var(--color-brand-primary)]/60 mb-3"
                     >
                       {current.category}
                     </motion.p>
@@ -119,14 +119,14 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
                   <div className="flex flex-wrap items-center gap-3">
                     <Button
                       onClick={() => onBookDemo?.()}
-                      className="rounded-full bg-[#1A1F71] hover:bg-[#141963] text-white text-[15px] md:text-[16px] font-semibold px-6 md:px-8 py-4 md:py-5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#1A1F71]/20"
+                      className="rounded-full bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] text-white text-[15px] md:text-[16px] font-semibold px-6 md:px-8 py-4 md:py-5 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[var(--color-brand-primary)]/20"
                     >
                       Book a Demo
                     </Button>
                     <Button
                       variant="ghost"
                       onClick={() => onFindCard?.()}
-                      className="rounded-full text-[#1A1F71] text-[15px] font-semibold px-6 py-4 hover:bg-[#1A1F71]/5"
+                      className="rounded-full text-[var(--color-brand-primary)] text-[15px] font-semibold px-6 py-4 hover:bg-[var(--color-brand-primary)]/5"
                     >
                       Find a Card
                     </Button>
@@ -140,7 +140,7 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
                     <button key={idx} onClick={() => handleDotClick(idx)} className="group relative h-8 flex items-center justify-center">
                       <div className="w-12 h-[2px] bg-neutral-300 overflow-hidden rounded-full transition-colors group-hover:bg-neutral-400">
                         {idx === currentIndex && (
-                          <motion.div className="h-full bg-[#1A1F71]" initial={{ width: "0%" }} animate={{ width: isPlaying ? `${progress}%` : "100%" }} transition={{ duration: isPlaying ? 0.1 : 0.3 }} />
+                          <motion.div className="h-full bg-[var(--color-brand-primary)]" initial={{ width: "0%" }} animate={{ width: isPlaying ? `${progress}%` : "100%" }} transition={{ duration: isPlaying ? 0.1 : 0.3 }} />
                         )}
                       </div>
                       <div className="absolute inset-0 -inset-y-2 cursor-pointer" />
@@ -166,7 +166,7 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
                 >
                   <button onClick={() => onSelect?.(current)} className="w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl relative group cursor-pointer text-left">
                     <img src={current.image} alt={current.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/70 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/70 via-transparent to-transparent" />
                     <div className="absolute bottom-6 left-6 right-6 text-white">
                       <h3 className="text-2xl font-bold drop-shadow-lg">{current.name}</h3>
                       <p className="text-white/80 text-sm mt-1 drop-shadow">{current.tagline}</p>
@@ -190,7 +190,7 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
       </div>
 
       {/* Stats Section - Animated counters */}
-      <div ref={statsRef} className="py-16 md:py-20 bg-[#1A1F71]">
+      <div ref={statsRef} className="py-16 md:py-20 bg-[var(--color-brand-primary)]">
         <div className="max-w-6xl mx-auto px-6 md:px-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {STATS.map((stat, i) => (
@@ -232,9 +232,9 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
                   initial={{ opacity: 0, y: 30 }}
                   animate={tiersInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: i * 0.15, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                  className="group rounded-3xl border border-neutral-200 bg-white p-8 text-center hover:shadow-xl hover:border-[#1A1F71]/20 hover:-translate-y-2 transition-all duration-500 cursor-pointer"
+                  className="group rounded-3xl border border-neutral-200 bg-white p-8 text-center hover:shadow-xl hover:border-[var(--color-brand-primary)]/20 hover:-translate-y-2 transition-all duration-500 cursor-pointer"
                 >
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#1A1F71] to-[#1434CB] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-accent)] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-neutral-900 mb-2">{tier.name}</h3>
@@ -269,7 +269,7 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
               className="space-y-8"
             >
               <div>
-                <p className="text-[12px] uppercase tracking-[0.2em] font-semibold text-[#1A1F71]/60 mb-3">Why Us</p>
+                <p className="text-[12px] uppercase tracking-[0.2em] font-semibold text-[var(--color-brand-primary)]/60 mb-3">Why Us</p>
                 <h2 className="text-3xl md:text-4xl font-semibold text-neutral-900 mb-4">Wherever life takes you</h2>
                 <p className="text-neutral-500 text-lg">Brand cards are designed to protect your purchases, simplify payments and offer peace of mind wherever you shop.</p>
               </div>
@@ -285,10 +285,10 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
                     initial={{ opacity: 0, y: 20 }}
                     animate={featuresInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
-                    className="rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-[#1A1F71]/20 transition-all"
+                    className="rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-[var(--color-brand-primary)]/20 transition-all"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-[#1A1F71]/10 flex items-center justify-center mb-3">
-                      <feat.Icon className="w-5 h-5 text-[#1A1F71]" />
+                    <div className="w-10 h-10 rounded-xl bg-[var(--color-brand-primary)]/10 flex items-center justify-center mb-3">
+                      <feat.Icon className="w-5 h-5 text-[var(--color-brand-primary)]" />
                     </div>
                     <h4 className="text-sm font-semibold text-neutral-900 mb-1">{feat.title}</h4>
                     <p className="text-xs text-neutral-500">{feat.desc}</p>
@@ -300,11 +300,11 @@ export const HeroSection = ({ onSelect, onFindCard, onTierClick, onBookDemo }: H
         </div>
       </div>
       {/* Card Showcase Video */}
-      <div className="py-16 md:py-24 bg-[#1A1F71]">
+      <div className="py-16 md:py-24 bg-[var(--color-brand-primary)]">
         <div className="max-w-6xl mx-auto px-6 md:px-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 space-y-6">
-              <p className="text-[12px] uppercase tracking-[0.2em] font-semibold text-[#F7B600] mb-3">The Brand Card</p>
+              <p className="text-[12px] uppercase tracking-[0.2em] font-semibold text-[var(--color-brand-secondary)] mb-3">The Brand Card</p>
               <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">Designed for every moment</h2>
               <p className="text-white/60 text-lg leading-relaxed">From the chip to the contactless symbol, every detail of your Brand card is engineered for security, speed, and global acceptance.</p>
               <div className="grid grid-cols-2 gap-3 pt-2">

@@ -66,6 +66,10 @@ export const BRAND: BrandConfig = {
   logoImage: "/images/brand-logo.png",
   favicon: "/favicon.ico",
 
+  // Real hex values — these are written into the CSS custom properties
+  // --color-brand-primary/secondary/accent by layout.tsx at runtime.
+  // Every component reads the CSS var, not the raw hex, so changing these
+  // three values propagates everywhere.
   primaryColor: "#1A1F71",
   secondaryColor: "#F7B600",
   accentColor: "#1434CB",

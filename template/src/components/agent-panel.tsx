@@ -10,7 +10,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
   const [copied, setCopied] = useState("");
   const [signingIn, setSigningIn] = useState(false);
   const [activeConnector, setActiveConnector] = useState("Claude");
-  const [activeSkill, setActiveSkill] = useState("visa-search");
+  const [activeSkill, setActiveSkill] = useState(`${BRAND.mcpServerName.replace("-agent", "")}-search`);
   const [showApiKey, setShowApiKey] = useState(false);
   const [apiKey] = useState("api_live_" + Math.random().toString(36).substring(2, 18));
   const { isSignedIn, profile } = useUserStore();
@@ -47,24 +47,28 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
     "Perplexity": "Pro Search → Tools → Connect MCP → paste URL",
   };
 
+  // Derive a short brand slug from the MCP server name (e.g. "visa-agent" -> "visa").
+  const brandSlug = BRAND.mcpServerName.replace(/-agent$/, "");
+  const productLabel = BRAND.productLabel.toLowerCase();
+
   const cliCommands = [
-    { cmd: "visa-agent search 'travel cards'", desc: "Search 13+ tools" },
-    { cmd: "visa-agent ask 'best card for travel'", desc: "Natural language actions" },
-    { cmd: "visa-agent tools list", desc: "List available tools" },
-    { cmd: "visa-agent skills list", desc: "Browse all skills" },
-    { cmd: "visa-agent compare 'sapphire vs reserve'", desc: "Compare cards" },
-    { cmd: "visa-agent generate 'merchant map France'", desc: "Generate visualizations" },
+    { cmd: `${BRAND.mcpServerName} search '${productLabel}'`, desc: `Search ${BRAND.name} catalog` },
+    { cmd: `${BRAND.mcpServerName} ask 'recommend something for me'`, desc: "Natural language actions" },
+    { cmd: `${BRAND.mcpServerName} tools list`, desc: "List available tools" },
+    { cmd: `${BRAND.mcpServerName} skills list`, desc: "Browse all skills" },
+    { cmd: `${BRAND.mcpServerName} compare '<id1> vs <id2>'`, desc: `Compare ${productLabel}` },
+    { cmd: `${BRAND.mcpServerName} generate 'a dashboard'`, desc: "Generate visualizations" },
   ];
 
   const skills = [
-    { name: "visa-search", desc: "Semantic card & solution search", installs: "2.3k" },
-    { name: "visa-compare", desc: "Side-by-side card comparison", installs: "1.8k" },
-    { name: "visa-recommend", desc: "Personalized card recommendation", installs: "3.1k" },
-    { name: "visa-generate", desc: "AI code generation for visualizations", installs: "1.2k" },
-    { name: "visa-voice", desc: "Live voice agent with Gemini", installs: "890" },
-    { name: "visa-map", desc: "Interactive global presence map", installs: "1.5k" },
-    { name: "visa-tiers", desc: "Card tier benefits analysis", installs: "2.0k" },
-    { name: "visa-3d-cards", desc: "3D interactive card viewer", installs: "1.1k" },
+    { name: `${brandSlug}-search`, desc: `Semantic ${productLabel} & ${BRAND.solutionLabel.toLowerCase()} search`, installs: "2.3k" },
+    { name: `${brandSlug}-compare`, desc: `Side-by-side ${productLabel} comparison`, installs: "1.8k" },
+    { name: `${brandSlug}-recommend`, desc: `Personalized ${BRAND.name} recommendation`, installs: "3.1k" },
+    { name: `${brandSlug}-generate`, desc: "AI code generation for visualizations", installs: "1.2k" },
+    { name: `${brandSlug}-voice`, desc: "Live voice agent with Gemini", installs: "890" },
+    { name: `${brandSlug}-map`, desc: "Interactive global presence map", installs: "1.5k" },
+    { name: `${brandSlug}-tiers`, desc: `${BRAND.name} tier benefits analysis`, installs: "2.0k" },
+    { name: `${brandSlug}-3d`, desc: `3D interactive ${productLabel} viewer`, installs: "1.1k" },
   ];
 
   const mcpTools = [
@@ -82,7 +86,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         {/* API Key */}
         <div className="rounded-2xl border border-neutral-200 overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-neutral-50 border-b border-neutral-200">
-            <Key className="w-4 h-4 text-[#1A1F71]" />
+            <Key className="w-4 h-4 text-[var(--color-brand-primary)]" />
             <h2 className="text-sm font-semibold text-neutral-900">API Key</h2>
           </div>
           <div className="px-5 py-4 space-y-3">
@@ -116,7 +120,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
                     useUserStore.getState().signIn(p);
                     setSigningIn(false);
                   }}
-                  className="text-sm font-semibold text-[#1A1F71] hover:text-[#141963] px-4 py-2 rounded-lg bg-[#1A1F71]/5 hover:bg-[#1A1F71]/10 transition-all disabled:opacity-50"
+                  className="text-sm font-semibold text-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)] px-4 py-2 rounded-lg bg-[var(--color-brand-primary)]/5 hover:bg-[var(--color-brand-primary)]/10 transition-all disabled:opacity-50"
                 >
                   {signingIn ? "Signing in..." : "Sign In to Get Key"}
                 </button>
@@ -129,16 +133,16 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         <div className="rounded-2xl border border-neutral-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3.5 bg-neutral-50 border-b border-neutral-200">
             <div className="flex items-center gap-2.5">
-              <Globe className="w-4 h-4 text-[#1A1F71]" />
+              <Globe className="w-4 h-4 text-[var(--color-brand-primary)]" />
               <h2 className="text-sm font-semibold text-neutral-900">AgentNet</h2>
             </div>
             <span className="text-xs text-neutral-400 font-mono">agentnet</span>
           </div>
           <div className="px-5 py-4 space-y-3">
-            <p className="text-xs text-neutral-500">Brand Agent is available on AgentNet — the universal agent tool network. Install it in any AI agent with one command:</p>
+            <p className="text-xs text-neutral-500">{BRAND.agentName} is available on AgentNet — the universal agent tool network. Install it in any AI agent with one command:</p>
             <div className="flex items-center justify-between bg-neutral-50 rounded-xl border border-neutral-200 px-4 py-3">
-              <code className="text-sm text-[#1A1F71] font-mono">agentnet add visa-agent</code>
-              <button onClick={() => copy("agentnet add visa-agent", "agentnet")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
+              <code className="text-sm text-[var(--color-brand-primary)] font-mono">{`agentnet add ${BRAND.mcpServerName}`}</code>
+              <button onClick={() => copy(`agentnet add ${BRAND.mcpServerName}`, "agentnet")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
                 {copied === "agentnet" ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-neutral-400" />}
               </button>
             </div>
@@ -151,7 +155,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         {/* MCP Server */}
         <div className="rounded-2xl border border-neutral-200 overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-neutral-50 border-b border-neutral-200">
-            <Server className="w-4 h-4 text-[#1A1F71]" />
+            <Server className="w-4 h-4 text-[var(--color-brand-primary)]" />
             <h2 className="text-sm font-semibold text-neutral-900">MCP Server</h2>
           </div>
           <div className="px-5 py-5 space-y-4">
@@ -176,7 +180,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
             <p className="text-xs text-neutral-400">{connectorInstructions[activeConnector] || "Paste the MCP URL in your platform settings"}</p>
 
             <div className="flex items-center justify-between bg-neutral-50 rounded-xl border border-neutral-200 px-4 py-3">
-              <code className="text-sm text-[#1A1F71] font-mono">{BRAND.mcpUrl}</code>
+              <code className="text-sm text-[var(--color-brand-primary)] font-mono">{BRAND.mcpUrl}</code>
               <button onClick={() => copy(BRAND.mcpUrl, "mcp-url")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
                 {copied === "mcp-url" ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-neutral-400" />}
               </button>
@@ -188,14 +192,14 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         <div className="rounded-2xl border border-neutral-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3.5 bg-neutral-50 border-b border-neutral-200">
             <div className="flex items-center gap-2.5">
-              <Terminal className="w-4 h-4 text-[#1A1F71]" />
+              <Terminal className="w-4 h-4 text-[var(--color-brand-primary)]" />
               <h2 className="text-sm font-semibold text-neutral-900">CLI</h2>
             </div>
           </div>
           <div className="px-5 py-5 space-y-4">
             <div className="flex items-center justify-between bg-neutral-50 rounded-xl border border-neutral-200 px-4 py-3">
-              <code className="text-sm text-[#1A1F71] font-mono">npm install visa-agent-mcp</code>
-              <button onClick={() => copy("npm install visa-agent-mcp", "install")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
+              <code className="text-sm text-[var(--color-brand-primary)] font-mono">{`npm install ${BRAND.mcpServerName}-mcp`}</code>
+              <button onClick={() => copy(`npm install ${BRAND.mcpServerName}-mcp`, "install")} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
                 {copied === "install" ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-neutral-400" />}
               </button>
             </div>
@@ -220,7 +224,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         {/* Skill — single detail view */}
         <div className="rounded-2xl border border-neutral-200 overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-neutral-50 border-b border-neutral-200">
-            <Zap className="w-4 h-4 text-[#1A1F71]" />
+            <Zap className="w-4 h-4 text-[var(--color-brand-primary)]" />
             <h2 className="text-sm font-semibold text-neutral-900">Skill</h2>
           </div>
           <div className="px-5 py-5 space-y-5">
@@ -250,7 +254,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
                   {/* Header */}
                   <div>
                     <div className="flex items-center gap-3">
-                      <code className="text-lg text-[#1A1F71] font-mono font-bold">{skill.name}</code>
+                      <code className="text-lg text-[var(--color-brand-primary)] font-mono font-bold">{skill.name}</code>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">v1.0.0</span>
                     </div>
                     <p className="text-sm text-neutral-500 mt-1">{skill.desc}</p>
@@ -261,7 +265,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
                   <div className="space-y-2">
                     <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">Install</p>
                     <div className="flex items-center justify-between bg-neutral-50 rounded-xl border border-neutral-200 px-4 py-3">
-                      <code className="text-sm text-[#1A1F71] font-mono">npx @smithery/cli skill add iris-lab/{skill.name}</code>
+                      <code className="text-sm text-[var(--color-brand-primary)] font-mono">npx @smithery/cli skill add iris-lab/{skill.name}</code>
                       <button onClick={() => copy(`npx @smithery/cli skill add iris-lab/${skill.name}`, `install-${skill.name}`)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">
                         {copied === `install-${skill.name}` ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-neutral-400" />}
                       </button>
@@ -297,7 +301,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         {/* MCP Tools */}
         <div className="rounded-2xl border border-neutral-200 overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-neutral-50 border-b border-neutral-200">
-            <Server className="w-4 h-4 text-[#1A1F71]" />
+            <Server className="w-4 h-4 text-[var(--color-brand-primary)]" />
             <h2 className="text-sm font-semibold text-neutral-900">MCP Tools</h2>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-200 text-neutral-500 font-medium">{mcpTools.length}</span>
           </div>
@@ -305,8 +309,8 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
             {mcpTools.map((t) => (
               <div key={t.name} className="flex items-center justify-between py-2.5 border-b border-neutral-100 last:border-0 group">
                 <div className="flex items-center gap-3">
-                  <code className="text-sm text-[#1A1F71] font-mono font-medium">{t.name}</code>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#1A1F71]/10 text-[#1A1F71] font-bold uppercase">POST</span>
+                  <code className="text-sm text-[var(--color-brand-primary)] font-mono font-medium">{t.name}</code>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] font-bold uppercase">POST</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-neutral-400">{t.desc}</span>
@@ -320,7 +324,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
         </div>
 
         <div className="text-center pb-4">
-          <p className="text-xs text-neutral-300">Brand Agent v1.0.0 — Built by Iris Lab — WWA Platform — Available on AgentNet</p>
+          <p className="text-xs text-neutral-300">{`${BRAND.agentName} v1.0.0 — Built by ${BRAND.agentDeveloper} — WWA Platform — Available on AgentNet`}</p>
         </div>
       </div>
     </div>

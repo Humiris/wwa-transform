@@ -31,7 +31,7 @@ export const AccountPanel = () => {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[#1A1F71] to-[#1434CB] flex items-center justify-center text-white text-2xl font-bold shadow-lg"
+            className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-accent)] flex items-center justify-center text-white text-2xl font-bold shadow-lg"
           >
             {profile.firstName ? `${profile.firstName[0]}${profile.lastName?.[0] || ""}` : "?"}
           </motion.div>
@@ -51,11 +51,11 @@ export const AccountPanel = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-neutral-400">Profile completion</span>
-            <span className="font-semibold text-[#1A1F71]">{completedCount}/{steps.length}</span>
+            <span className="font-semibold text-[var(--color-brand-primary)]">{completedCount}/{steps.length}</span>
           </div>
           <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-[#1A1F71] to-[#1434CB] rounded-full"
+              className="h-full bg-gradient-to-r from-[var(--color-brand-primary)] to-[var(--color-brand-accent)] rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
@@ -80,7 +80,7 @@ export const AccountPanel = () => {
                   step.done
                     ? "bg-white border-green-200 shadow-sm"
                     : isCurrent
-                      ? "bg-white border-[#1A1F71]/30 shadow-md ring-2 ring-[#1A1F71]/10"
+                      ? "bg-white border-[var(--color-brand-primary)]/30 shadow-md ring-2 ring-[var(--color-brand-primary)]/10"
                       : "bg-neutral-50 border-neutral-200 opacity-50"
                 )}
               >
@@ -89,19 +89,19 @@ export const AccountPanel = () => {
                   step.done
                     ? "bg-green-100"
                     : isCurrent
-                      ? "bg-[#1A1F71]/10"
+                      ? "bg-[var(--color-brand-primary)]/10"
                       : "bg-neutral-100"
                 )}>
                   {step.done ? (
                     <Check className="w-5 h-5 text-green-600" />
                   ) : (
-                    <Icon className={cn("w-5 h-5", isCurrent ? "text-[#1A1F71]" : "text-neutral-300")} />
+                    <Icon className={cn("w-5 h-5", isCurrent ? "text-[var(--color-brand-primary)]" : "text-neutral-300")} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     "text-xs font-medium uppercase tracking-wider",
-                    step.done ? "text-green-600" : isCurrent ? "text-[#1A1F71]" : "text-neutral-300"
+                    step.done ? "text-green-600" : isCurrent ? "text-[var(--color-brand-primary)]" : "text-neutral-300"
                   )}>
                     {step.label}
                   </p>
@@ -114,7 +114,7 @@ export const AccountPanel = () => {
                   )}
                 </div>
                 {isCurrent && (
-                  <div className="w-2 h-2 rounded-full bg-[#1A1F71] animate-pulse flex-shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-[var(--color-brand-primary)] animate-pulse flex-shrink-0" />
                 )}
               </motion.div>
             );
@@ -132,7 +132,7 @@ export const AccountPanel = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl bg-gradient-to-r from-[#1A1F71] to-[#1434CB] p-6 text-white text-center space-y-3"
+            className="rounded-2xl bg-gradient-to-r from-[var(--color-brand-primary)] to-[var(--color-brand-accent)] p-6 text-white text-center space-y-3"
           >
             <h3 className="text-lg font-semibold">Profile Complete! 🎉</h3>
             <p className="text-sm text-white/70">Now when you apply for any card, your details will be auto-filled. Just say &quot;buy it&quot; and we handle the rest.</p>

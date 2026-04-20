@@ -99,7 +99,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               <p className="text-sm text-neutral-500">{selectedCard.tier} &bull; Annual fee: {selectedCard.annualFee}</p>
               <p className="text-xs text-neutral-400">Confirmation #{Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
             </div>
-            <Button onClick={handleReset} className="mt-6 rounded-full bg-[#1A1F71] px-8 py-5 text-base">
+            <Button onClick={handleReset} className="mt-6 rounded-full bg-[var(--color-brand-primary)] px-8 py-5 text-base">
               Browse More Cards
             </Button>
           </motion.div>
@@ -149,7 +149,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-neutral-600">First Name *</label>
-                  <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[#1A1F71] focus-within:ring-2 focus-within:ring-[#1A1F71]/10">
+                  <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[var(--color-brand-primary)] focus-within:ring-2 focus-within:ring-[var(--color-brand-primary)]/10">
                     <User className="w-4 h-4 text-neutral-300" />
                     <input
                       type="text"
@@ -162,7 +162,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-neutral-600">Last Name *</label>
-                  <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[#1A1F71] focus-within:ring-2 focus-within:ring-[#1A1F71]/10">
+                  <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[var(--color-brand-primary)] focus-within:ring-2 focus-within:ring-[var(--color-brand-primary)]/10">
                     <User className="w-4 h-4 text-neutral-300" />
                     <input
                       type="text"
@@ -176,7 +176,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-600">Email *</label>
-                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[#1A1F71] focus-within:ring-2 focus-within:ring-[#1A1F71]/10">
+                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[var(--color-brand-primary)] focus-within:ring-2 focus-within:ring-[var(--color-brand-primary)]/10">
                   <Mail className="w-4 h-4 text-neutral-300" />
                   <input
                     type="email"
@@ -189,7 +189,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-600">Phone</label>
-                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[#1A1F71] focus-within:ring-2 focus-within:ring-[#1A1F71]/10">
+                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[var(--color-brand-primary)] focus-within:ring-2 focus-within:ring-[var(--color-brand-primary)]/10">
                   <Phone className="w-4 h-4 text-neutral-300" />
                   <input
                     type="tel"
@@ -206,7 +206,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400">Address</h2>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-600">Street Address</label>
-                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[#1A1F71] focus-within:ring-2 focus-within:ring-[#1A1F71]/10">
+                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[var(--color-brand-primary)] focus-within:ring-2 focus-within:ring-[var(--color-brand-primary)]/10">
                   <MapPin className="w-4 h-4 text-neutral-300" />
                   <input
                     type="text"
@@ -225,7 +225,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     placeholder="New York"
-                    className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#1A1F71] focus:ring-2 focus:ring-[#1A1F71]/10"
+                    className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/10"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -235,7 +235,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                     placeholder="NY"
-                    className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#1A1F71] focus:ring-2 focus:ring-[#1A1F71]/10"
+                    className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/10"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -245,7 +245,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                     value={formData.zip}
                     onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
                     placeholder="10001"
-                    className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#1A1F71] focus:ring-2 focus:ring-[#1A1F71]/10"
+                    className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--color-brand-primary)] focus:ring-2 focus:ring-[var(--color-brand-primary)]/10"
                   />
                 </div>
               </div>
@@ -255,7 +255,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400">Financial</h2>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-neutral-600">Annual Income *</label>
-                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[#1A1F71] focus-within:ring-2 focus-within:ring-[#1A1F71]/10">
+                <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2.5 focus-within:border-[var(--color-brand-primary)] focus-within:ring-2 focus-within:ring-[var(--color-brand-primary)]/10">
                   <span className="text-neutral-300 text-sm">$</span>
                   <input
                     type="text"
@@ -274,7 +274,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                 onClick={() => setAgreedTerms(!agreedTerms)}
                 className={cn(
                   "mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
-                  agreedTerms ? "bg-[#1A1F71] border-[#1A1F71]" : "border-neutral-300"
+                  agreedTerms ? "bg-[var(--color-brand-primary)] border-[var(--color-brand-primary)]" : "border-neutral-300"
                 )}
               >
                 {agreedTerms && <Check className="w-3 h-3 text-white" />}
@@ -290,7 +290,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               className={cn(
                 "w-full rounded-full py-6 text-base font-semibold transition-all",
                 isFormValid
-                  ? "bg-[#1A1F71] hover:bg-[#141963] text-white"
+                  ? "bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] text-white"
                   : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
               )}
             >
@@ -319,7 +319,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
         </div>
 
         {/* Card Hero - 3D */}
-        <div className="bg-gradient-to-br from-[#1A1F71] to-[#0d1147] px-6 py-10 md:px-12 md:py-16">
+        <div className="bg-gradient-to-br from-[var(--color-brand-primary)] to-[#0d1147] px-6 py-10 md:px-12 md:py-16">
           <div className="max-w-2xl mx-auto flex flex-col items-center gap-8">
             <div className="w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden border border-neutral-200"><img src={selectedCard.image} alt={selectedCard.name} className="w-full h-full object-cover" /></div>
             <div className="text-white text-center space-y-3">
@@ -330,7 +330,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                 <span className="text-sm bg-white/10 backdrop-blur px-4 py-2 rounded-full">
                   Annual fee: <strong>{selectedCard.annualFee}</strong>
                 </span>
-                <span className="text-sm bg-[#F7B600]/20 text-[#F7B600] px-4 py-2 rounded-full font-medium">
+                <span className="text-sm bg-[var(--color-brand-secondary)]/20 text-[var(--color-brand-secondary)] px-4 py-2 rounded-full font-medium">
                   {selectedCard.category}
                 </span>
               </div>
@@ -346,7 +346,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                 {selectedCard.rewardRate && (
                   <div className="rounded-2xl border border-neutral-200 bg-white p-4 text-center">
                     <p className="text-[10px] uppercase tracking-wider text-neutral-400 mb-1">Rewards</p>
-                    <p className="text-lg font-bold text-[#1A1F71]">{selectedCard.rewardRate}</p>
+                    <p className="text-lg font-bold text-[var(--color-brand-primary)]">{selectedCard.rewardRate}</p>
                   </div>
                 )}
                 {selectedCard.signUpBonus && (
@@ -371,11 +371,11 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
             <div className="grid gap-4">
               {selectedCard.features.map((h, i) => (
                 <div key={i} className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1A1F71]/10 flex-shrink-0">
-                    {i === 0 ? <Star className="h-4 w-4 text-[#1A1F71]" /> :
-                     i === 1 ? <Zap className="h-4 w-4 text-[#1A1F71]" /> :
-                     i === 2 ? <Globe className="h-4 w-4 text-[#1A1F71]" /> :
-                     <Shield className="h-4 w-4 text-[#1A1F71]" />}
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-brand-primary)]/10 flex-shrink-0">
+                    {i === 0 ? <Star className="h-4 w-4 text-[var(--color-brand-primary)]" /> :
+                     i === 1 ? <Zap className="h-4 w-4 text-[var(--color-brand-primary)]" /> :
+                     i === 2 ? <Globe className="h-4 w-4 text-[var(--color-brand-primary)]" /> :
+                     <Shield className="h-4 w-4 text-[var(--color-brand-primary)]" />}
                   </span>
                   <p className="text-sm text-neutral-700 leading-relaxed">{h}</p>
                 </div>
@@ -393,7 +393,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               </div>
               <div className="rounded-2xl border border-neutral-200 bg-white p-5 space-y-1">
                 <p className="text-xs uppercase tracking-wider text-neutral-400">Card Tier</p>
-                <p className="text-lg font-semibold text-[#1A1F71]">{selectedCard.tier}</p>
+                <p className="text-lg font-semibold text-[var(--color-brand-primary)]">{selectedCard.tier}</p>
               </div>
               <div className="rounded-2xl border border-neutral-200 bg-white p-5 space-y-1">
                 <p className="text-xs uppercase tracking-wider text-neutral-400">Issuer</p>
@@ -410,18 +410,18 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
           <section className="max-w-2xl mx-auto">
             <div className="rounded-3xl border border-neutral-200 bg-gradient-to-r from-[#eef0ff] to-[#fffdf5] p-8 space-y-6">
               <div className="flex items-center gap-3">
-                <Sparkles className="w-6 h-6 text-[#1A1F71]" />
+                <Sparkles className="w-6 h-6 text-[var(--color-brand-primary)]" />
                 <h3 className="text-xl font-semibold text-neutral-900">Ready to apply?</h3>
               </div>
               <p className="text-sm text-neutral-500">
                 Apply for the {selectedCard.name} right here. Quick application with instant decision.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button onClick={handleApply} className="rounded-full bg-[#1A1F71] px-8 py-5 text-base font-semibold text-white hover:bg-[#141963]">
+                <Button onClick={handleApply} className="rounded-full bg-[var(--color-brand-primary)] px-8 py-5 text-base font-semibold text-white hover:bg-[var(--color-brand-primary)]">
                   Apply Now
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
-                <Button onClick={handleBackFromDetail} variant="ghost" className="rounded-full px-6 py-5 text-base font-semibold text-[#1A1F71] hover:bg-[#1A1F71]/10">
+                <Button onClick={handleBackFromDetail} variant="ghost" className="rounded-full px-6 py-5 text-base font-semibold text-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)]/10">
                   Compare Other Cards
                 </Button>
               </div>
@@ -437,11 +437,11 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
                   <button
                     key={card.id}
                     onClick={() => { setSelectedCard(card); window.scrollTo(0, 0); }}
-                    className="flex gap-4 rounded-2xl border border-neutral-200 bg-white p-4 text-left hover:shadow-md hover:border-[#1A1F71]/30 transition-all group"
+                    className="flex gap-4 rounded-2xl border border-neutral-200 bg-white p-4 text-left hover:shadow-md hover:border-[var(--color-brand-primary)]/30 transition-all group"
                   >
                     <img src={card.image} alt={card.name} className="w-16 h-10 object-contain flex-shrink-0" />
                     <div>
-                      <h4 className="text-sm font-semibold text-neutral-900 group-hover:text-[#1A1F71]">{card.name}</h4>
+                      <h4 className="text-sm font-semibold text-neutral-900 group-hover:text-[var(--color-brand-primary)]">{card.name}</h4>
                       <p className="text-xs text-neutral-400">{card.annualFee}/yr</p>
                     </div>
                   </button>
@@ -476,7 +476,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
                 activeFilter === cat
-                  ? "bg-[#1A1F71] text-white"
+                  ? "bg-[var(--color-brand-primary)] text-white"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
               )}
             >
@@ -489,7 +489,7 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
       <div className="px-6 py-6 md:px-12 space-y-6">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1A1F71]/50">Products</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--color-brand-primary)]/50">Products</p>
             <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">{title || "Available Cards"}</h1>
           </div>
           <p className="text-sm text-neutral-400">{filteredCards.length} card{filteredCards.length !== 1 ? 's' : ''}</p>
@@ -500,9 +500,9 @@ export const CardsBrowsePanel = ({ cardIds, onBack, title, autoApply = false }: 
             <div key={card.id} className="flex flex-col items-center gap-3 group cursor-pointer" onClick={() => handleSelectCard(card)}>
               <div className="w-[200px] h-[260px] rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-all group"><img src={card.image} alt={card.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>
               <div className="text-center space-y-1 w-full px-2">
-                <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-[#1A1F71] transition-colors">{card.name}</h3>
+                <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-[var(--color-brand-primary)] transition-colors">{card.name}</h3>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#1A1F71]/60 bg-[#1A1F71]/5 px-2 py-0.5 rounded-full">{card.tier}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--color-brand-primary)]/60 bg-[var(--color-brand-primary)]/5 px-2 py-0.5 rounded-full">{card.tier}</span>
                   <span className="text-[10px] text-neutral-400">{card.annualFee}/yr</span>
                   {card.rewardRate && <span className="text-[10px] text-green-600 font-medium">{card.rewardRate}</span>}
                 </div>

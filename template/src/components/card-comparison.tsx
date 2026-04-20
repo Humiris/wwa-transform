@@ -14,35 +14,28 @@ interface CardComparisonProps {
   onSelectCard?: (cardIds: string[], title: string) => void;
 }
 
-// Tier comparison data from the Brand website crawl
-const TIER_FEATURES = [
-  { name: "Zero Liability", traditional: true, signature: true, infinite: true },
-  { name: "Emergency Card Replacement (24-72 hrs)", traditional: true, signature: true, infinite: true },
-  { name: "Emergency Cash Disbursement", traditional: true, signature: true, infinite: true },
-  { name: "Lost/Stolen Card Reporting", traditional: true, signature: true, infinite: true },
-  { name: "Roadside Dispatch 24/7", traditional: true, signature: true, infinite: true },
-  { name: "Cardholder Inquiry Service", traditional: true, signature: true, infinite: true },
-  { name: "Travel Emergency Assistance 24/7/365", traditional: false, signature: true, infinite: true },
-  { name: "Auto Rental Collision Damage Waiver", traditional: false, signature: "optional", infinite: true },
-  { name: "Extended Warranty Protection", traditional: false, signature: "optional", infinite: true },
-  { name: "Purchase Security (90 days)", traditional: false, signature: "optional", infinite: true },
-  { name: "Return Protection (90 days)", traditional: false, signature: "optional", infinite: true },
-  { name: "Lost Luggage Reimbursement", traditional: false, signature: "optional", infinite: true },
-  { name: "Travel Accident Insurance", traditional: false, signature: "optional", infinite: true },
-  { name: "Trip Cancellation/Interruption", traditional: false, signature: "optional", infinite: true },
-  { name: "Trip Delay Reimbursement", traditional: false, signature: "$300 / 12+ hrs", infinite: "$500 / 6+ hrs" },
-  { name: "Baggage Delay Reimbursement", traditional: false, signature: "$300 / 4+ hrs", infinite: "$300 / 4+ hrs" },
-  { name: "Cellphone Protection", traditional: false, signature: "$50 deductible", infinite: "$50 deductible" },
-  { name: "Emergency Evacuation ($10K max)", traditional: false, signature: "optional", infinite: "optional" },
-  { name: "Emergency Medical/Dental ($2.5K max)", traditional: false, signature: "optional", infinite: "optional" },
-  { name: "Global Entry Credit ($120)", traditional: false, signature: "optional", infinite: false },
-];
+// TEMPLATE NOTE: the TIER_FEATURES data below is a placeholder shape only.
+// The 20 rows ship empty so card-comparison compiles for any brand. Populate
+// this array with your brand's tier benefits — three columns keyed by tier
+// name (e.g. traditional/signature/infinite for fintech, or essentials/
+// signature/elite for luxury, or daily/trainer/race for sportswear). Each
+// row value may be `true`, `false`, `"optional"`, or a custom string.
+//
+// The three tier column keys are wired into the JSX later in this file as
+// .traditional / .signature / .infinite — if you rename the columns, also
+// rename the keys in your rows and the column headers below.
+const TIER_FEATURES: Array<{
+  name: string;
+  traditional: boolean | string;
+  signature: boolean | string;
+  infinite: boolean | string;
+}> = [];
 
 const StatusCell = ({ value }: { value: boolean | string }) => {
   if (value === true) return <div className="flex justify-center"><Check className="w-4 h-4 text-green-600" /></div>;
   if (value === false) return <div className="flex justify-center"><Minus className="w-4 h-4 text-neutral-300" /></div>;
   if (value === "optional") return <span className="text-[10px] text-amber-600 font-medium">Issuer opt.</span>;
-  return <span className="text-[10px] text-[#1A1F71] font-semibold">{value}</span>;
+  return <span className="text-[10px] text-[var(--color-brand-primary)] font-semibold">{value}</span>;
 };
 
 export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardComparisonProps) => {
@@ -62,7 +55,7 @@ export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardCom
 
         <div className="px-4 py-8 md:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1A1F71]/50 mb-2">Comparison</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--color-brand-primary)]/50 mb-2">Comparison</p>
             <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">Product Tiers</h1>
             <p className="text-sm text-neutral-500 mt-2">Compare benefits across Traditional, Signature, and Infinite.</p>
           </motion.div>
@@ -71,7 +64,7 @@ export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardCom
           <div className="overflow-x-auto">
             <table className="w-full min-w-[500px]">
               <thead>
-                <tr className="border-b-2 border-[#1A1F71]/10">
+                <tr className="border-b-2 border-[var(--color-brand-primary)]/10">
                   <th className="text-left py-3 pr-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider w-[40%]">Benefit</th>
                   <th className="text-center py-3 px-2 w-[20%]">
                     <div className="rounded-xl bg-neutral-50 p-3">
@@ -80,13 +73,13 @@ export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardCom
                     </div>
                   </th>
                   <th className="text-center py-3 px-2 w-[20%]">
-                    <div className="rounded-xl bg-[#1A1F71]/5 p-3 border border-[#1A1F71]/10">
-                      <p className="text-xs font-bold text-[#1A1F71]">Signature</p>
+                    <div className="rounded-xl bg-[var(--color-brand-primary)]/5 p-3 border border-[var(--color-brand-primary)]/10">
+                      <p className="text-xs font-bold text-[var(--color-brand-primary)]">Signature</p>
                       <p className="text-[10px] text-neutral-400">7+ benefits</p>
                     </div>
                   </th>
                   <th className="text-center py-3 px-2 w-[20%]">
-                    <div className="rounded-xl bg-[#1A1F71] p-3">
+                    <div className="rounded-xl bg-[var(--color-brand-primary)] p-3">
                       <p className="text-xs font-bold text-white">Infinite</p>
                       <p className="text-[10px] text-white/60">15 standard</p>
                     </div>
@@ -113,10 +106,10 @@ export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardCom
           </div>
 
           <div className="mt-8 flex gap-3">
-            <Button onClick={() => onSelectCard?.(productItems.filter(c => c.tier.includes("Signature")).map(c => c.id), "Standard Tier Cards")} variant="outline" className="rounded-full text-sm border-[#1A1F71] text-[#1A1F71]">
+            <Button onClick={() => onSelectCard?.(productItems.filter(c => c.tier.includes("Signature")).map(c => c.id), "Standard Tier Cards")} variant="outline" className="rounded-full text-sm border-[var(--color-brand-primary)] text-[var(--color-brand-primary)]">
               Browse Signature Cards
             </Button>
-            <Button onClick={() => onSelectCard?.(productItems.filter(c => c.tier.includes("Infinite")).map(c => c.id), "Premium Tier Cards")} className="rounded-full text-sm bg-[#1A1F71]">
+            <Button onClick={() => onSelectCard?.(productItems.filter(c => c.tier.includes("Infinite")).map(c => c.id), "Premium Tier Cards")} className="rounded-full text-sm bg-[var(--color-brand-primary)]">
               Browse Infinite Cards
             </Button>
           </div>
@@ -149,7 +142,7 @@ export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardCom
 
       <div className="px-4 py-8 md:px-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1A1F71]/50 mb-2">Comparison</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--color-brand-primary)]/50 mb-2">Comparison</p>
           <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">{title}</h1>
         </motion.div>
 
@@ -209,7 +202,7 @@ export const CardComparison = ({ cardIds, title, onBack, onSelectCard }: CardCom
                 transition={{ delay: 0.3 + ci * 0.1 }}
                 className="rounded-2xl border border-neutral-200 p-4 space-y-3"
               >
-                <h4 className="text-sm font-semibold text-[#1A1F71]">{card.name}</h4>
+                <h4 className="text-sm font-semibold text-[var(--color-brand-primary)]">{card.name}</h4>
                 <ul className="space-y-2">
                   {card.features.map((h, i) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-neutral-600">

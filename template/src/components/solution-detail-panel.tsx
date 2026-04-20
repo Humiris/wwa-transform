@@ -55,7 +55,7 @@ export const SolutionDetailPanel = ({ solution, onBack, onSolutionClick, onNavPa
           alt={solution.name}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F71]/90 via-[#1A1F71]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-brand-primary)]/90 via-[var(--color-brand-primary)]/40 to-transparent" />
         <div className="relative z-10 px-6 py-16 md:px-12 md:py-24 flex flex-col justify-end min-h-[350px] md:min-h-[450px]">
           <div className="max-w-4xl mx-auto text-center text-white space-y-4">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/60">{solution.category}</p>
@@ -97,8 +97,8 @@ export const SolutionDetailPanel = ({ solution, onBack, onSolutionClick, onNavPa
                 key={feature.title}
                 className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1F71]/10">
-                  <Zap className="h-5 w-5 text-[#1A1F71]" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-brand-primary)]/10">
+                  <Zap className="h-5 w-5 text-[var(--color-brand-primary)]" />
                 </span>
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-neutral-800 md:text-base">{feature.title}</p>
@@ -126,7 +126,7 @@ export const SolutionDetailPanel = ({ solution, onBack, onSolutionClick, onNavPa
                       <img src={s.image} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                     </div>
                     <div className="space-y-1 p-4 pt-0">
-                      <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-[#1A1F71]">{s.name}</h3>
+                      <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-[var(--color-brand-primary)]">{s.name}</h3>
                       <p className="text-xs text-neutral-500">{s.tagline}</p>
                     </div>
                   </button>
@@ -146,14 +146,14 @@ export const SolutionDetailPanel = ({ solution, onBack, onSolutionClick, onNavPa
                 <div className="flex flex-wrap gap-3">
                   <Button
                     onClick={() => onBookDemo?.()}
-                    className="rounded-full bg-[#1A1F71] px-6 py-5 text-base font-semibold text-white transition hover:bg-[#141963] hover:shadow md:px-8 md:py-6"
+                    className="rounded-full bg-[var(--color-brand-primary)] px-6 py-5 text-base font-semibold text-white transition hover:bg-[var(--color-brand-primary)] hover:shadow md:px-8 md:py-6"
                   >
                     Book a Demo
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={() => onNavPage?.("developer")}
-                    className="rounded-full border border-transparent px-6 py-5 text-base font-semibold text-[#1A1F71] transition hover:border-[#1A1F71]/20 hover:bg-[#1A1F71]/10 md:px-8 md:py-6"
+                    className="rounded-full border border-transparent px-6 py-5 text-base font-semibold text-[var(--color-brand-primary)] transition hover:border-[var(--color-brand-primary)]/20 hover:bg-[var(--color-brand-primary)]/10 md:px-8 md:py-6"
                   >
                     Talk to an Expert
                     <ChevronRight className="h-4 w-4" />

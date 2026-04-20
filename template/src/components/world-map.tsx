@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { Globe, CreditCard, Building2, Users, MapPin } from "lucide-react";
 
 const REGIONS = [
-  { id: "na", name: "North America", x: 22, y: 35, countries: 3, merchants: "12M+", banks: "5,000+", cards: "800M+", color: "#1A1F71" },
-  { id: "latam", name: "Latin America", x: 28, y: 62, countries: 33, merchants: "15M+", banks: "3,500+", cards: "600M+", color: "#1434CB" },
+  { id: "na", name: "North America", x: 22, y: 35, countries: 3, merchants: "12M+", banks: "5,000+", cards: "800M+", color: "var(--color-brand-primary)" },
+  { id: "latam", name: "Latin America", x: 28, y: 62, countries: 33, merchants: "15M+", banks: "3,500+", cards: "600M+", color: "var(--color-brand-accent)" },
   { id: "eu", name: "Europe", x: 52, y: 30, countries: 44, merchants: "35M+", banks: "8,000+", cards: "900M+", color: "#0d47a1" },
   { id: "mea", name: "Middle East & Africa", x: 55, y: 55, countries: 70, merchants: "10M+", banks: "4,000+", cards: "300M+", color: "#1565c0" },
   { id: "ap", name: "Asia Pacific", x: 78, y: 42, countries: 50, merchants: "60M+", banks: "10,000+", cards: "1.4B+", color: "#0d1147" },
@@ -27,7 +27,7 @@ export const WorldMap = () => {
     <div className="flex-1 h-full bg-[#050a1a] flex flex-col text-white overflow-y-auto">
       {/* Header */}
       <div className="px-6 pt-8 pb-4 md:px-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#F7B600] font-semibold mb-2">Global Presence</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-brand-secondary)] font-semibold mb-2">Global Presence</p>
         <h1 className="text-2xl md:text-3xl font-semibold">Brand Around the World</h1>
         <p className="text-sm text-white/50 mt-2">Tap a region to explore global presence. 200+ countries, 180 currencies, everywhere you want to be.</p>
       </div>
@@ -85,12 +85,12 @@ export const WorldMap = () => {
             {/* Dot */}
             <div className={`w-4 h-4 rounded-full relative z-10 border-2 transition-all ${
               activeRegion === region.id
-                ? "bg-[#F7B600] border-[#F7B600] scale-125"
-                : "bg-white/80 border-white/40 hover:bg-[#F7B600] hover:border-[#F7B600]"
+                ? "bg-[var(--color-brand-secondary)] border-[var(--color-brand-secondary)] scale-125"
+                : "bg-white/80 border-white/40 hover:bg-[var(--color-brand-secondary)] hover:border-[var(--color-brand-secondary)]"
             }`} />
             {/* Label */}
             <div className={`absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-semibold transition-all ${
-              activeRegion === region.id ? "text-[#F7B600]" : "text-white/40"
+              activeRegion === region.id ? "text-[var(--color-brand-secondary)]" : "text-white/40"
             }`}>
               {region.name}
             </div>
@@ -125,12 +125,12 @@ export const WorldMap = () => {
           className="mx-6 md:mx-10 mb-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5"
         >
           <div className="flex items-center gap-3 mb-4">
-            <MapPin className="w-5 h-5 text-[#F7B600]" />
+            <MapPin className="w-5 h-5 text-[var(--color-brand-secondary)]" />
             <h3 className="text-lg font-semibold">{active.name}</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="rounded-xl bg-white/5 p-3 text-center">
-              <p className="text-xl font-bold text-[#F7B600]">{active.countries}</p>
+              <p className="text-xl font-bold text-[var(--color-brand-secondary)]">{active.countries}</p>
               <p className="text-[10px] text-white/40">Countries</p>
             </div>
             <div className="rounded-xl bg-white/5 p-3 text-center">
@@ -160,7 +160,7 @@ export const WorldMap = () => {
               transition={{ delay: i * 0.1 }}
               className="rounded-xl border border-white/10 bg-white/5 p-4"
             >
-              <stat.icon className="w-5 h-5 text-[#F7B600] mb-2" />
+              <stat.icon className="w-5 h-5 text-[var(--color-brand-secondary)] mb-2" />
               <p className="text-2xl font-bold">{stat.value}</p>
               <p className="text-[10px] text-white/50 mt-1">{stat.label}</p>
             </motion.div>

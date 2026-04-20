@@ -254,7 +254,7 @@ RULES:
             <motion.div key="connecting" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.1 }} className="flex flex-col items-center">
               <div className="relative w-16 h-16 mb-4">
                 <div className="absolute inset-0 border-3 border-white/10 rounded-full" />
-                <div className="absolute inset-0 border-3 border-[#1A1F71] rounded-full border-t-transparent animate-spin" />
+                <div className="absolute inset-0 border-3 border-[var(--color-brand-primary)] rounded-full border-t-transparent animate-spin" />
               </div>
               <p className="text-white/50 text-sm font-medium">Connecting...</p>
             </motion.div>

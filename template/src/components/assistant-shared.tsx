@@ -119,7 +119,7 @@ export const EmptyState = ({ onOpen }: { onOpen: () => void }) => (
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="absolute inset-0 rounded-full bg-[#1A1F71]/20"
+          className="absolute inset-0 rounded-full bg-[var(--color-brand-primary)]/20"
           initial={{ scale: 1, opacity: 0.5 }}
           animate={{ scale: [1, 2.5], opacity: [0.5, 0] }}
           transition={{ duration: 3, repeat: Infinity, delay: i * 1, ease: "easeOut" }}
@@ -157,7 +157,7 @@ export const RecommendationCard = ({ solution, onLearnMore }: { solution: Soluti
         <div className="space-y-2">
           <Button
             onClick={() => onLearnMore(solution.id)}
-            className="w-full rounded-full bg-[#1A1F71] hover:bg-[#141963]"
+            className="w-full rounded-full bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)]"
           >
             Explore Solution
           </Button>
@@ -200,7 +200,7 @@ export const ThinkingPanel = ({ steps }: { steps: string[] }) => (
     <ul className="mt-4 space-y-3 text-sm text-neutral-600">
       {steps.map((step, index) => (
         <li key={step + index} className="flex items-center gap-3">
-          <span className="h-2 w-2 rounded-full bg-[#1A1F71] shadow-[0_0_8px_rgba(26,31,113,0.4)]" />
+          <span className="h-2 w-2 rounded-full bg-[var(--color-brand-primary)] shadow-[0_0_8px_rgba(26,31,113,0.4)]" />
           {step}
         </li>
       ))}

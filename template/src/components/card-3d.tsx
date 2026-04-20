@@ -85,7 +85,7 @@ export const Card3D = ({ card, size = "md", onClick, className }: Card3DProps) =
           style={{ backfaceVisibility: "hidden" }}
         >
           {/* Card background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1A1F71] via-[#1434CB] to-[#0d1147]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-brand-primary)] via-[var(--color-brand-accent)] to-[#0d1147]">
             {/* Holographic effect */}
             <div
               className="absolute inset-0 opacity-30 transition-opacity"
@@ -155,7 +155,7 @@ export const Card3D = ({ card, size = "md", onClick, className }: Card3DProps) =
 
         {/* Back */}
         <div
-          className="absolute inset-0 rounded-2xl overflow-hidden bg-gradient-to-br from-[#0d1147] via-[#1A1F71] to-[#1434CB]"
+          className="absolute inset-0 rounded-2xl overflow-hidden bg-gradient-to-br from-[#0d1147] via-[var(--color-brand-primary)] to-[var(--color-brand-accent)]"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           {/* Magnetic stripe */}

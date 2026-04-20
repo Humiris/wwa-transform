@@ -171,7 +171,7 @@ CRITICAL OUTPUT RULES:
 3. The page MUST scroll and be VERY LONG — minimum 5-8 rich sections. Never make a tiny page.
 
 DESIGN SYSTEM:
-- Colors: primary #1A1F71, accent #F7B600, bg dark #0a0f2e, bg sections alternate #0d1533 / #111b45, text white, muted #8892b0
+- Colors: primary var(--color-brand-primary), accent var(--color-brand-secondary), bg dark #0a0f2e, bg sections alternate #0d1533 / #111b45, text white, muted #8892b0
 - Font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif
 - Border radius: 16px for cards, 24px for sections
 - Shadows: 0 4px 24px rgba(0,0,0,0.3)

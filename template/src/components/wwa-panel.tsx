@@ -21,6 +21,7 @@ import { Plus, ArrowRight, Loader2, Paperclip, Image as ImageIcon, FileText, X, 
 import { cn, cleanMarkdown } from "@/lib/utils";
 import { solutions, Solution } from "@/lib/solutions";
 import { productItems, ProductItem } from "@/lib/cards";
+import { BRAND } from "@/lib/brand-config";
 import { Card3D } from "./card-3d";
 import { getAssistantResponse, generateVisualization, classifyIntent } from "@/app/actions";
 import { useUserStore } from "@/lib/user-store";
@@ -34,15 +35,19 @@ import {
   ThinkingPanel,
 } from "./assistant-shared";
 
+// TEMPLATE NOTE: these starter prompts drive the chat suggestions shown on
+// empty state. Replace with 6–8 brand-specific prompts that showcase what
+// the agent can do (product search, comparison, feature explanation, etc.).
+// Kept generic by default so the template compiles for any brand.
 const SUGGESTIONS = [
-  "Show me travel credit cards",
-  "What Visa cards have no annual fee?",
-  "Compare Visa Traditional vs Signature vs Infinite",
-  "Compare Sapphire Preferred vs Reserve",
-  "How does Click to Pay work?",
-  "What is Zero Liability protection?",
-  "Show me business cards",
-  "What are Visa's security features?",
+  `Show me featured ${"products"}`,
+  `What's new from ${"this brand"}?`,
+  `Compare the top options`,
+  `Recommend something for me`,
+  `Show me the latest collection`,
+  `What's the flagship product?`,
+  `Browse by category`,
+  `Help me find a gift`,
 ];
 
 interface Message {
@@ -378,7 +383,7 @@ export const WWAPanel = ({
 
         const p = useUserStore.getState().profile;
         const addr = useUserStore.getState().getDefaultAddress();
-        const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.firstName + " " + p.lastName)}&background=1A1F71&color=fff&size=128`;
+        const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.firstName + " " + p.lastName)}&background=${BRAND.primaryColor.replace("#", "")}&color=fff&size=128`;
 
         // Sign them in
         userStore.signIn({ ...p, avatar });
@@ -961,10 +966,10 @@ export const WWAPanel = ({
                     <button
                       key={s}
                       onClick={() => handleSubmit(s)}
-                      className="text-left px-4 py-3 rounded-2xl border border-neutral-200 text-sm text-neutral-600 hover:border-[#1A1F71] hover:text-[#1A1F71] hover:bg-[#1A1F71]/5 transition-all group relative"
+                      className="text-left px-4 py-3 rounded-2xl border border-neutral-200 text-sm text-neutral-600 hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)]/5 transition-all group relative"
                     >
                       <span>{s}</span>
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-[#1A1F71] transition-opacity">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-[var(--color-brand-primary)] transition-opacity">
                         <ArrowRight className="w-4 h-4" />
                       </span>
                     </button>
@@ -981,7 +986,7 @@ export const WWAPanel = ({
                 className={cn("flex flex-col", message.role === "user" ? "items-end" : "items-start")}
               >
                 {message.role === "user" ? (
-                  <div className="max-w-[80%] rounded-3xl bg-[#1A1F71] px-4 py-3 text-sm font-medium text-white shadow-md">
+                  <div className="max-w-[80%] rounded-3xl bg-[var(--color-brand-primary)] px-4 py-3 text-sm font-medium text-white shadow-md">
                     {message.content}
                   </div>
                 ) : (
@@ -998,7 +1003,7 @@ export const WWAPanel = ({
         <div
           className={cn(
             "flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2.5 shadow-sm",
-            isRecording && "ring-2 ring-[#1A1F71]/70"
+            isRecording && "ring-2 ring-[var(--color-brand-primary)]/70"
           )}
         >
           <button onClick={() => setShowPlusMenu((prev) => !prev)} className="text-neutral-400 hover:text-neutral-700">
@@ -1016,7 +1021,7 @@ export const WWAPanel = ({
           {inputValue.trim() && !isLoading && !isRecording ? (
             <button
               onClick={() => handleSubmit()}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1A1F71] text-white transition hover:scale-105 active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition hover:scale-105 active:scale-95"
             >
               <ArrowRight className="h-4 w-4" />
             </button>
@@ -1030,9 +1035,9 @@ export const WWAPanel = ({
               )}
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[#1A1F71]" />
+                <Loader2 className="h-4 w-4 animate-spin text-[var(--color-brand-primary)]" />
               ) : (
-                <Mic className={cn("h-4 w-4", isRecording ? "text-white" : "text-[#1A1F71]")} />
+                <Mic className={cn("h-4 w-4", isRecording ? "text-white" : "text-[var(--color-brand-primary)]")} />
               )}
             </button>
           )}
@@ -1044,7 +1049,7 @@ export const WWAPanel = ({
               onClick={() => { setShowPlusMenu(false); setInputValue("[Attached Image] "); inputRef.current?.focus(); }}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-neutral-600 transition hover:bg-neutral-100"
             >
-              <ImageIcon className="h-4 w-4 text-[#1A1F71]" />
+              <ImageIcon className="h-4 w-4 text-[var(--color-brand-primary)]" />
               Photo
             </button>
             <button
