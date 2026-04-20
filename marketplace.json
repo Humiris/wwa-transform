@@ -8,7 +8,7 @@
       "name": "wwa-transform",
       "source": {
         "source": "local",
-        "path": "./plugins/wwa-transform"
+        "path": "."
       },
       "policy": {
         "installation": "AVAILABLE",

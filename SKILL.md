@@ -34,10 +34,12 @@ Transform any website into a custom AI-powered agentfront. The skill deeply anal
 The agentfront must reflect what the company ACTUALLY is, not what Visa is.
 
 ## Template Location
-`/Users/joel/wwa-skill/template/` — Framework only (split-pane, chat, navbar). Content is generated custom per company. After `cp -R`, run the template's `npx next build` once to confirm nothing regressed in the template itself.
+`./template/` relative to this SKILL.md — the skill directory (typically `~/.claude/skills/wwa-transform/` after install) contains the Next.js template. Content is generated custom per company. After `cp -R`, run the template's `npx next build` once to confirm nothing regressed in the template itself.
 
 ## Reference Implementation
-`/Users/joel/wwa.visa/` — Shows what a finished agentfront looks like for a payment card company. If any template file looks incomplete or broken, prefer copying the equivalent from `/Users/joel/wwa.visa/src/components/` and applying the `visaCards → productItems` / `VisaCard → ProductItem` / `annualFee → price` renames — don't try to fix the template stub in place.
+**https://wwa.visa.codiris.app** — live demo of a finished agentfront (payment card company). Source for the template is at https://github.com/Humiris/wwa-transform/tree/main/template.
+
+If any template file looks incomplete or broken, inspect the live demo via WebFetch for visual reference, then apply the `visaCards → productItems` / `VisaCard → ProductItem` / `annualFee → price` renames — don't try to fix the template stub in place.
 
 ---
 

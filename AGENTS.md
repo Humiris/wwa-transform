@@ -4,7 +4,7 @@ This repository contains the WWA Transform tool — an AI agent that transforms 
 
 ## How to Use
 
-When asked to transform a website, follow the instructions in `skills/wwa-transform/SKILL.md`.
+When asked to transform a website, follow the instructions in `SKILL.md` at the root of this repo.
 
 The workflow is:
 1. Deep crawl the target website (4+ pages)
@@ -16,8 +16,8 @@ The workflow is:
 
 ## Key Files
 
-- `skills/wwa-transform/SKILL.md` — Complete step-by-step instructions
-- `skills/wwa-transform/references/` — Architecture, crawling guide, deployment guide
+- `SKILL.md` — Complete step-by-step instructions
+- `references/` — Architecture, crawling guide, deployment guide
 - `template/` — Next.js agentfront template (the framework to build upon)
 
 ## Critical Rules

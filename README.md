@@ -9,7 +9,7 @@ WWA Transform is a plugin for **Claude Code** and **Codex** that transforms any 
 ### Claude Code
 
 ```bash
-git clone https://github.com/Humiris/wwa-transform.git ~/.claude/plugins/wwa-transform
+git clone https://github.com/Humiris/wwa-transform.git ~/.claude/skills/wwa-transform
 ```
 
 Then in Claude Code:
@@ -110,9 +110,8 @@ Next.js 16 / React 19 / Tailwind v4 / Framer Motion / Zustand / Gemini 3.1 Flash
 wwa-transform/
 ├── .claude-plugin/plugin.json    # Claude Code manifest
 ├── .codex-plugin/plugin.json     # Codex manifest
-├── skills/wwa-transform/
-│   ├── SKILL.md                  # Core skill instructions
-│   └── references/               # Architecture, crawling, deployment guides
+├── SKILL.md                      # Core skill instructions (at repo root so Claude Code auto-discovers on clone to ~/.claude/skills/wwa-transform)
+├── references/                   # Architecture, crawling, deployment guides
 ├── template/                     # Next.js agentfront template
 ├── cli/                          # Standalone CLI
 ├── AGENTS.md                     # Codex agent instructions
