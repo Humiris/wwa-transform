@@ -34,10 +34,10 @@ Transform any website into a custom AI-powered agentfront. The skill deeply anal
 The agentfront must reflect what the company ACTUALLY is, not what Visa is.
 
 ## Template Location
-`/Users/joel/wwa-skill/template/` — Framework only (split-pane, chat, navbar). Content is generated custom per company.
+`/Users/joel/wwa-skill/template/` — Framework only (split-pane, chat, navbar). Content is generated custom per company. After `cp -R`, run the template's `npx next build` once to confirm nothing regressed in the template itself.
 
 ## Reference Implementation
-`/Users/joel/wwa.visa/` — Shows what a finished agentfront looks like for a payment card company.
+`/Users/joel/wwa.visa/` — Shows what a finished agentfront looks like for a payment card company. If any template file looks incomplete or broken, prefer copying the equivalent from `/Users/joel/wwa.visa/src/components/` and applying the `visaCards → productItems` / `VisaCard → ProductItem` / `annualFee → price` renames — don't try to fix the template stub in place.
 
 ---
 
@@ -272,6 +272,8 @@ curl -sL -o public/videos/hero.webm "{brand-video-url}" \
 
 Video hero is essential for luxury brands. Fall back to static image if video can't be obtained. Keep videos under 10MB (resize with ffmpeg if needed).
 
+**American heritage brands (Ralph Lauren, Levi's, L.L. Bean, J.Crew, Tommy Hilfiger) rarely expose public video CDNs.** Plan for a static full-bleed runway or editorial hero with a subtle 1.04 scale-on-mount or parallax effect instead — don't waste time hunting for a video that isn't there.
+
 **3. Unsplash (MANDATORY FALLBACK — always works, real product photos)**
 ```bash
 # Search URL pattern: https://images.unsplash.com/photo-{id}?w=800&q=80
@@ -432,6 +434,12 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 - Company types relevant to their market
 - Form copy
 
+For **luxury e-commerce / heritage brands**, rewrite the whole modal as "Request a Private Appointment" with three fields — the B2B fields (company size, revenue range, country dropdown, SKU picker) are inappropriate. Keep it short:
+- Name + email
+- Preferred boutique (dropdown of real flagships from brand-config / flagships.ts)
+- Occasion + interests (free text — "wedding gift", "wardrobe refresh", "home", etc.)
+Submit CTA: "Request Appointment" — not "Book a Demo".
+
 **`src/components/live-session-overlay.tsx`** — CRITICAL:
 - Replace the SVG logo paths (appears 2 times: header + animated center) with the brand's logo
 - Update the viewBox to match the brand's SVG
@@ -461,6 +469,13 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
   - `mcpUrl`: `"https://wwa.{brand}.codiris.app/mcp"` (same origin as deployed agentfront)
   - `mcpServerName`: `"{brand}-agent"` (CLI identifier for `claude mcp add`)
 - **Verify after deploy:** `curl -X POST https://wwa.{brand}.codiris.app/mcp -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'` — must return the tool list with 200.
+- **Recommended brand-specific tools by type** (append to `TOOLS` in route.ts and to `mcpTools` in agent-panel.tsx):
+  - Heritage brand (Ralph Lauren, Rolex, Hermès, Patek Philippe): `get_heritage(yearFrom?, yearTo?)` from `src/lib/heritage.ts`, `find_flagship(city?, country?)` from `src/lib/flagships.ts`
+  - Multi-house luxury group (Dior, Chanel, Armani): `get_houses()`, `get_house(id)`
+  - Restaurant / hospitality arm (Ralph Lauren Polo Bar, Bulgari hotels, Armani Caffè): `find_restaurant(city?)`
+  - SaaS with usage pricing (Stripe, Twilio): `estimate_cost(usage)`, `check_availability(region)`
+  - Fintech with tiered benefits (Visa, Mastercard, Amex): `compare_tiers(tiers[])`
+  - Luxury fragrance house: `get_fragrance_notes(productId)`, `find_boutique(city?)`
 
 **`src/lib/brand-config.ts`** — Logo:
 - Download logo via WebSearch: "{brand} logo SVG wikipedia" or "{brand} press kit"
@@ -473,6 +488,7 @@ Write `src/lib/cards.ts` — ONLY if the company sells browsable items (plans, c
 - For ALL other companies: the template already uses product image cards instead of Card3D
 - The `cards-browse-panel.tsx` and `wwa-panel.tsx` CardCarousel show product images with name/price overlay
 - Do NOT use Card3D for fashion, SaaS, e-commerce, or any non-card company — it renders a credit card with chip and magnetic stripe
+- The file contains hardcoded Visa SVG paths and a `1-800-VISA` customer-service phone. Even if the component is never rendered, the audit grep will still flag those strings. For non-card brands, either **delete `card-3d.tsx` entirely** or scrub the hardcoded Visa strings before running the audit.
 
 **`src/components/cards-browse-panel.tsx`** — PRODUCT DETAIL VIEW (non-credit-card companies):
 
@@ -504,16 +520,26 @@ Also: the detail view renders the product with a dark gradient background and ce
 
 The default template uses a SaaS/tech aesthetic (split layout, colored gradient tiles, tech-y feature grid). This is WRONG for luxury/editorial brands. Adapt per brand:
 
-**LUXURY / EDITORIAL (Dior, Hermès, Chanel, Gucci, Aesop):**
-- **Hero**: Full-bleed image, black/white overlay, centered text, serif heading, no split
+**LUXURY / EDITORIAL — FRENCH / EUROPEAN (Dior, Hermès, Chanel, Gucci, Aesop):**
+- **Hero**: Full-bleed image or video, black/white overlay, centered text, serif heading, no split
 - **CTAs**: Square buttons (no rounded-full), white-on-image, "Discover" / "Shop the Collection"
 - **Stats**: Minimal, no gradient background, serif numbers, uppercase labels with wide tracking
 - **Collections**: Large 2-col tiles with full product imagery, gradient overlay, serif headings
 - **Category grid**: Aspect 4:5 tiles with real product images as backgrounds (NOT colored gradients)
-- **Fonts**: Playfair Display / Didot style serif for all headings
+- **Fonts**: Playfair Display / Didot-style serif for all headings
 - **Typography**: `tracking-[0.3em]` on uppercase labels, `font-normal` (not bold) on headings
 - **Colors**: Black, white, cream, gold — no blue/purple accents
 - **Motion**: Slow, gentle (1-2s transitions), long fade-ins
+
+**LUXURY — AMERICAN HERITAGE / PREP (Ralph Lauren, Tommy Hilfiger, J.Crew, L.L. Bean, Brooks Brothers):**
+- **Hero**: Full-bleed runway OR editorial lifestyle photograph (equestrian, sailing, library, cabin interior — NOT Paris-minimalist void). Static image with 1.04 scale-on-mount is fine — most of these brands have no public video CDN.
+- **CTAs**: Square buttons, uppercase-wide tracking, "Shop the Collection" / "Request an Appointment" / "Visit the Flagship"
+- **Stats**: Minimal, serif numbers, uppercase labels — same as French luxury
+- **Collections**: 2- or 3-col grid of portrait 3:4 or 4:5 images with serif captions
+- **Fonts**: Caslon / Garamond / Playfair Display — NOT Didot (that reads as French and wrong)
+- **Typography**: Wide-tracked uppercase labels in burgundy or navy, italic body for pullquotes, never all-caps long-form
+- **Colors**: Navy primary, burgundy accent, cream surface, racing green or tartan secondary, antique gold highlight — avoid stark black/white/gold (that's French)
+- **Motion**: Slower than French luxury (1200–1600ms), no scale transforms beyond 1.04
 
 **TECH / SAAS (Stripe, Notion, Linear):**
 - Split hero with copy left + product screenshot right
@@ -646,7 +672,10 @@ npx vercel --prod --yes
 1. Check HTTP 200: `curl -s -o /dev/null -w "%{http_code}" https://wwa.{domain}.codiris.app`
 2. Use WebFetch to read the deployed page — check NO wrong-company content
 3. Check images load
-4. Report URL to user
+4. **MCP round-trip**: `curl -s -m 20 -X POST https://wwa.{domain}.codiris.app/mcp -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'` — must return the tool list with 200
+5. Report URL to user
+
+**Preview-tool caveat:** the `preview_start` MCP tool detects `package.json` from your **session cwd**, not from `.claude/launch.json` in the target project. If your session cwd is not the target project (e.g. you're working on `wwa.ralphlauren` from a session rooted at `wwa.visa`), `preview_start` will start the wrong dev server. Verify via `curl` against the deployed URL instead of local screenshots when working cross-project.
 
 ---
 
