@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * LiveSessionOverlay — Gemini Live voice-call UI.
+ *
+ * TEMPLATE NOTE: contains two inline SVG references to the Visa wordmark
+ * (header + animated center). For any non-Visa brand you MUST either:
+ *  - Replace the inline <svg> blocks with <img src={BRAND.logoImage} />, or
+ *  - Swap the SVG <path d="..."> data for the brand's wordmark path.
+ * Otherwise the voice call opens with a "Visa" logo on top of your brand.
+ * See SKILL.md "Known template residues".
+ */
+
 import React, { useState, useEffect, useRef } from "react";
 import { X, Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -366,9 +366,13 @@ curl -L -o "public/favicon.ico" "https://www.google.com/s2/favicons?domain={doma
 ### Step 3.1: Copy Framework
 
 ```bash
-cp -r /Users/joel/wwa-skill/template/ ~/wwa.{domain}/
+# From inside the cloned skill (typically ~/.claude/skills/wwa-transform):
+mkdir -p ~/wwa.{domain}
+cp -R ./template/. ~/wwa.{domain}/
 cd ~/wwa.{domain} && npm install
 ```
+
+Do NOT copy from absolute maintainer paths like `/Users/joel/wwa-skill/template/` — that path only exists on the maintainer's machine. Always copy `./template/.` relative to the skill directory that contains this SKILL.md.
 
 **Template naming:** The template uses `ProductItem`/`productItems` (not VisaCard/visaCards) as generic names for browsable items. The navbar component is `brand-navbar.tsx`, the map is `world-map.tsx`. All imports in page.tsx already use these names.
 
@@ -630,6 +634,19 @@ grep -rn "annual fee\|annual income\|card tier\|Apply Now\|cardholder\|APR\|Rewa
 
 Fix every remaining line before deployment. The `card-3d.tsx` component is allowed to keep credit-card text because it's only rendered for actual credit card brands (Visa/Mastercard).
 
+### Known template residues — scrub before deploy
+
+These files ship in the template with Visa-shaped placeholders that the ordinary Phase 3 rewrites don't always catch. Verify each one explicitly before deploying:
+
+| File | What to scrub |
+|------|---------------|
+| `src/components/book-demo-modal.tsx` | Ships with B2B fields (CompanySize, AnnualRevenue, Country dropdown, SKU picker). For luxury / e-commerce brands, rewrite as "Request a Private Appointment" per the luxury pattern above. For SaaS keep B2B but relabel products. For consumer, replace entirely with a newsletter/contact form. The hero's main CTA opens this modal — an untouched modal ships the wrong form on the most-clicked button. |
+| `src/components/live-session-overlay.tsx` | Two inline SVG references render the Visa wordmark in the voice-call overlay (header + animated center). Replace with `<img src={BRAND.logoImage} alt={BRAND.name} />` or swap the SVG path — otherwise the voice call shows Visa. |
+| `src/components/agent-panel.tsx` | The mock API key uses the prefix `vsk_live_` (Visa-derived). Change to a brand-neutral `api_live_` or a brand-specific prefix (`hsk_`, `drk_`, etc). Runs through `Math.random().toString(36)` — easy to miss. |
+| `src/lib/cards.ts` | The `ProductItem` interface fields (`annualFee`, `apr`, `rewardRate`, `signUpBonus`, `issuer`, `applyUrl`) all bias toward credit cards. For non-card brands, either repurpose them (document with a comment block at the top of cards.ts — e.g. `annualFee` → price, `apr` → material, `rewardRate` → craftsmanship) or rename the interface properly (updates ~12 components). The audit grep cannot tell a repurposed field from a leak. |
+| `src/components/hero-section.tsx` | Often still contains hardcoded `STATS` / `CARD_TIERS` arrays instead of reading from `BRAND.stats`. Replace with `BRAND.stats.map(...)` so stats come from brand-config. |
+| `src/components/inner-page.tsx` | Contains `PersonalPage`, `BusinessPage`, `TravelPage` route shapes that assume a payments-brand nav. Rename / re-shape to match `BRAND.navItems` or delete and let `page.tsx` route dynamically. |
+
 ---
 
 ## PHASE 4: Build, Deploy, Verify
@@ -673,24 +690,37 @@ npm run build
 Fix ALL errors. Common: unterminated strings, missing images, type mismatches.
 
 ### Step 4.2: Deploy
-```bash
-# Copy env from existing project
-cp ~/wwa.visa/.env.local .env.local
 
+Create `.env.local` in your new project with the keys below. A stub `.env.example` ships in the template — `cp .env.example .env.local` and fill in your own values.
+
+```
+OPENAI_API_KEY=sk-…          # from https://platform.openai.com (fallback chat model)
+GEMINI_API_KEY=AIza…         # from https://aistudio.google.com/apikey (primary)
+GOOGLE_GENERATIVE_AI_API_KEY=AIza…  # same value as GEMINI_API_KEY (the voice client reads this name)
+```
+
+The MCP endpoint renders without these keys — only the AI chat + voice call need them.
+
+```bash
 npx vercel --prod --yes
 
-# Set env vars
+# Push env vars to Vercel
 source .env.local
-echo "$OPENAI_API_KEY" | npx vercel env add OPENAI_API_KEY production --force
-echo "$GEMINI_API_KEY" | npx vercel env add GEMINI_API_KEY production --force
-echo "$GEMINI_API_KEY" | npx vercel env add GOOGLE_GENERATIVE_AI_API_KEY production --force
+echo "$OPENAI_API_KEY"               | npx vercel env add OPENAI_API_KEY               production --force
+echo "$GEMINI_API_KEY"               | npx vercel env add GEMINI_API_KEY               production --force
+echo "$GOOGLE_GENERATIVE_AI_API_KEY" | npx vercel env add GOOGLE_GENERATIVE_AI_API_KEY production --force
 
 npx vercel --prod --yes
 ```
 
-### Step 4.3: DNS
+### Step 4.3: Custom subdomain (OPTIONAL — requires Cloudflare token)
+
+The `wwa.{brand}.codiris.app` alias requires a Cloudflare API token scoped to the `codiris.app` zone. **This token is not shipped with the skill** — it's private infrastructure. Two paths:
+
+**A. You have the token** (maintainer, or coordinated with Iris Lab):
 ```bash
-source ~/Documents/wwwtowwa/.env.vercel.local
+export CLOUDFLARE_API_TOKEN=…  # scoped to codiris.app zone, DNS edit permission
+
 ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=codiris.app" \
   -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['result'][0]['id'])")
@@ -701,6 +731,9 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records
 npx vercel domains add wwa.{domain}.codiris.app
 npx vercel --prod --yes
 ```
+
+**B. You don't have the token** (most customers):
+Skip this step. Your Vercel default URL (`https://<project>.vercel.app`) is a fully working agentfront — the MCP endpoint, chat, and all pages work there. Update `brand-config.ts` `mcpUrl` to the Vercel URL so the displayed install command matches. Ask the registry owner (open an issue at github.com/Humiris/wwa-transform) to provision the `wwa.{brand}.codiris.app` alias when you're ready to ship under the shared subdomain.
 
 ### Step 4.4: Verify
 1. Check HTTP 200: `curl -s -o /dev/null -w "%{http_code}" https://wwa.{domain}.codiris.app`

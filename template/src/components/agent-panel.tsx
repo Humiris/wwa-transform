@@ -12,7 +12,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
   const [activeConnector, setActiveConnector] = useState("Claude");
   const [activeSkill, setActiveSkill] = useState("visa-search");
   const [showApiKey, setShowApiKey] = useState(false);
-  const [apiKey] = useState("vsk_live_" + Math.random().toString(36).substring(2, 18));
+  const [apiKey] = useState("api_live_" + Math.random().toString(36).substring(2, 18));
   const { isSignedIn, profile } = useUserStore();
 
   const copy = (text: string, id: string) => {
@@ -91,7 +91,7 @@ export const AgentPanel = ({ isOpen, onClose, onSignIn }: { isOpen: boolean; onC
                 <p className="text-xs text-neutral-400">Your API key for authenticating requests:</p>
                 <div className="flex items-center justify-between bg-neutral-50 rounded-xl border border-neutral-200 px-4 py-3">
                   <code className="text-sm font-mono text-neutral-700">
-                    {showApiKey ? apiKey : "vsk_live_••••••••••••••••"}
+                    {showApiKey ? apiKey : "api_live_••••••••••••••••"}
                   </code>
                   <div className="flex items-center gap-1">
                     <button onClick={() => setShowApiKey(!showApiKey)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-neutral-200 transition-colors">

@@ -1,5 +1,22 @@
 "use client";
 
+/**
+ * BookDemoModal — demo/appointment request form.
+ *
+ * TEMPLATE NOTE: this file ships with B2B fields (CompanySize, AnnualRevenue,
+ * Country dropdown, product SKU picker) that were right for Visa and work for
+ * SaaS/enterprise brands, but are WRONG for luxury, e-commerce, and consumer
+ * brands. The hero CTA opens this modal — if you don't adapt it per brand,
+ * your most-clicked button will ship the wrong form.
+ *
+ * Per brand type (see SKILL.md "Known template residues"):
+ *  - Luxury / Heritage: rewrite as "Request a Private Appointment" — name,
+ *    email, preferred boutique (from flagships.ts), occasion, interests.
+ *    Drop company size / revenue / country / SKU picker.
+ *  - SaaS / Enterprise: keep B2B shape, rename products to the brand's API.
+ *  - Consumer / E-commerce: replace with a simple newsletter / contact form.
+ */
+
 import React, { useState } from "react";
 import { X, CheckCircle, Building2, User, Mail, Briefcase, Globe, DollarSign, Users, MessageSquare, ArrowRight, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
