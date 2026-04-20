@@ -217,15 +217,25 @@ curl -L -o "public/images/{name}.jpg" "{url}" \
 
 Most premium brand sites (Dior, Apple, Notion, Vercel, Hermès) AGGRESSIVELY BLOCK curl. Do NOT waste time trying to download from the brand's CDN. Skip directly to the fallback.
 
-**Sportswear is the big exception** — Puma, Nike, Adidas, Asics, Under Armour, New Balance, Reebok almost always serve real JPEGs on their public CDNs without any bot-blocking. Always try the brand CDN **first** for a sportswear transform. Verified patterns:
+**Sportswear CDNs are hit-or-miss** — Puma, Nike, Adidas, Asics, Under Armour, New Balance, Reebok sometimes serve real JPEGs on their public CDNs, but **you have to know the exact style code** and the match rate is worse than you'd expect. Observed on recent transforms:
+
+- **adidas** (`assets.adidas.com`) — returned 0 bytes on every style code tried (Apr 2026)
+- **Nike** (`static.nike.com`) — works for some products, requires inspecting a product page's `<img srcset>` to get the right hash
+- **New Balance** (`nb.scene7.com`) — works with a Referer header, but style codes are hard to guess; ~50% hit rate even for the most popular models
+- **Puma** (`images.puma.com`) — most reliable of the sportswear CDNs
+
+**Rule of thumb**: try the brand CDN once with a single well-known SKU. If it returns real bytes (>20KB), map your remaining products; if it 0-bytes or errors, drop straight to Wikimedia Commons. Don't spend 10 minutes guessing style codes.
 
 | Brand | CDN pattern | How to get the `{styleId}` |
 |-------|-------------|----------------------------|
 | Puma | `https://images.puma.com/image/upload/f_auto,q_auto,w_800,h_800/global/{styleId}/01/sv01/fnd/PNA/fmt/png/{slug}` | The number after `/pd/slug/` on a product page |
 | Nike | `https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/{hash}/{slug}.jpg` | Inspect a product page's `<img srcset>` |
-| Adidas | `https://assets.adidas.com/images/w_600,f_auto,q_auto/{styleId}/{slug}.jpg` | Product URL's trailing `{slug}.html` + style code panel |
+| Adidas | `https://assets.adidas.com/images/w_600,f_auto,q_auto/{styleId}/{slug}.jpg` | Often blocked — try once, fall back to Wikimedia |
+| New Balance | `https://nb.scene7.com/is/image/NB/{styleId}_nb_02_i?wid=1200&hei=1200` | Match the style id on the product page (e.g. `m1906rcd`) |
 
 Always include `-H "Referer: https://{brand-domain}/"` — the Cloudinary-style CDNs behind most sportswear brands accept the request with referrer, 404 it without.
+
+**Remember**: even when the CDN works, you still MUST run Step 2.3 visual verification on the downloaded bytes — CDNs occasionally return placeholder/blank images with a 200 status.
 
 **1. Brand's own CDN** (always try first for sportswear/athletic; ~30% of premium luxury sites; skip straight to #3 for most editorial/luxury brands)
 ```bash
@@ -460,6 +470,28 @@ cd ~/wwa.{domain} && npm install
 Do NOT copy from absolute maintainer paths like `/Users/joel/wwa-skill/template/` — that path only exists on the maintainer's machine. Always copy `./template/.` relative to the skill directory that contains this SKILL.md.
 
 **Template naming:** The template uses `ProductItem`/`productItems` (not VisaCard/visaCards) as generic names for browsable items. The navbar component is `brand-navbar.tsx`, the map is `world-map.tsx`. All imports in page.tsx already use these names.
+
+### Step 3.1b: Sweep Visa color tokens (MANDATORY, run once, before everything else)
+
+The template ships with Visa's blue (`#1A1F71`), navy hover (`#141963`), and light blue (`#1434CB`) hardcoded in ~8 components — `solution-detail-panel.tsx`, `solution-slider.tsx`, `generated-view.tsx`, `agent-panel.tsx`, `account-panel.tsx`, `live-session-overlay.tsx`, and others. **Delegating component rewrites to parallel subagents always leaves some of these files unedited**, and the Step 3.6 audit catches it every time. Save yourself the re-roll — run this sweep FIRST, right after `cp -R ./template/.`:
+
+```bash
+cd ~/wwa.{domain}
+
+# Replace Visa blue (primary), navy (hover), and light blue (accent) with brand colors.
+# Pick hex codes that match your brand-config.ts primary/secondary/accent.
+find src -name "*.tsx" -o -name "*.ts" | xargs sed -i '' \
+  -e 's/#1A1F71/{BRAND_PRIMARY}/g' \
+  -e 's/#141963/{BRAND_PRIMARY_DARK}/g' \
+  -e 's/#1434CB/{BRAND_ACCENT}/g'
+
+# Verify zero remaining
+grep -rn "#1A1F71\|#141963\|#1434CB" src/
+```
+
+Example for a black-primary brand: replace with `#000000`, `#000000`, `#CF0A2C`. For Dior (gold on black): `#0A0A0A`, `#000000`, `#C9A96E`.
+
+After the sweep, subagents can focus on rewriting content (copy, data) without worrying about color hunts. Re-run the grep at the end of Phase 3 to confirm nothing crept back in.
 
 ### Step 3.2: Write Brand Config
 
@@ -819,6 +851,29 @@ echo "$GOOGLE_GENERATIVE_AI_API_KEY" | npx vercel env add GOOGLE_GENERATIVE_AI_A
 
 npx vercel --prod --yes
 ```
+
+### Step 4.2b: Disable Vercel Deployment Protection (if the deploy returns 401)
+
+New Vercel projects under some team accounts default to **Standard Protection** (SSO-required). Symptom: `curl https://wwa{brand}.vercel.app` returns **HTTP 401** with a Vercel SSO login page. Happens silently — no warning from the CLI.
+
+Check with `curl -s -o /dev/null -w "%{http_code}\n" https://{your-vercel-url}`. If you see 401, disable protection via the Vercel API:
+
+```bash
+# Read the Vercel CLI's auth token (macOS path)
+TOKEN=$(cat "$HOME/Library/Application Support/com.vercel.cli/auth.json" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("token",""))')
+PROJECT_ID=$(python3 -c "import json; print(json.load(open('.vercel/project.json'))['projectId'])")
+TEAM_ID=$(python3 -c "import json; print(json.load(open('.vercel/project.json'))['orgId'])")
+
+curl -s -X PATCH "https://api.vercel.com/v9/projects/$PROJECT_ID?teamId=$TEAM_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"ssoProtection":null,"passwordProtection":null}' \
+  | python3 -c "import sys,json; r=json.load(sys.stdin); print('sso:', r.get('ssoProtection'), '| pw:', r.get('passwordProtection'))"
+```
+
+Expected output: `sso: None | pw: None`. The change takes effect within seconds — no redeploy needed.
+
+Linux path: `$HOME/.local/share/com.vercel.cli/auth.json`. Windows path: `%APPDATA%\com.vercel.cli\auth.json`.
 
 ### Step 4.3: Custom subdomain (OPTIONAL — requires Cloudflare token)
 
