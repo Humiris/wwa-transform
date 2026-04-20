@@ -179,6 +179,12 @@ Based on your analysis, decide which sections the homepage should have. Choose f
 
 **MANDATORY.** The agentfront is useless without real images.
 
+> ❗ **The single biggest bug in past transforms** is shipping images from the wrong brand — a generic "sneaker" photo from Unsplash that happens to show a Nike Swoosh on an adidas site, or a "handbag" photo that's clearly Chanel on a Dior site. Mis-branded imagery destroys credibility instantly.
+>
+> **Rule**: Every image that represents a **specific named product or franchise** (e.g. "Samba OG", "Air Max 90", "Lady Dior") MUST come from a source that lets you verify it shows the correct brand. Generic-category Unsplash photos are banned for these slots. They are OK only for brand-agnostic shots (lifestyle hero, category tiles with no named product, abstract backgrounds).
+>
+> **And every image MUST pass visual verification (Step 2.3) before you write its path into `cards.ts` / `solutions.ts`.**
+
 ```bash
 mkdir -p ~/wwa.{domain}/public/images/cards
 
@@ -198,6 +204,15 @@ curl -L -o "public/images/{name}.jpg" "{url}" \
 - Product screenshots/UI images
 
 ### Image Source Priority (USE IN THIS ORDER)
+
+**For named products/franchises** (Samba, Air Jordan 1, Stan Smith, Lady Dior, Birkin, etc.), priority is:
+
+1. Brand's own CDN (works for most sportswear — Nike, adidas, Puma, Asics, New Balance)
+2. **Wikipedia / Wikimedia Commons** — the category page `commons.wikimedia.org/wiki/Category:{Brand}_{Product}` has real, licensed product photos for every iconic sneaker, boot, bag, watch, perfume, etc.
+3. Industry publication CDN for the brand's segment (WWD for fashion, Fragrantica for perfume, SneakerNews/Hypebeast for sneakers)
+4. **DROP THE PRODUCT from `productItems`** if none of 1–3 yields a verified photo. A site with 6 real products is infinitely better than a site with 8 and two wrong-brand frauds.
+
+**Unsplash is BANNED for named-product slots.** It's OK only for: hero lifestyle shots (action/atmosphere, no named product), brand-agnostic category tiles, abstract backgrounds. If you use it, still run Step 2.3 verification — generic sneaker/bag photos on Unsplash very frequently show competitor logos.
 
 Most premium brand sites (Dior, Apple, Notion, Vercel, Hermès) AGGRESSIVELY BLOCK curl. Do NOT waste time trying to download from the brand's CDN. Skip directly to the fallback.
 
@@ -390,6 +405,43 @@ Every project MUST have (minimum):
 ```bash
 curl -L -o "public/favicon.ico" "https://www.google.com/s2/favicons?domain={domain}&sz=64"
 ```
+
+### Step 2.3: Visual verification — MANDATORY before writing any image path into `cards.ts` / `solutions.ts`
+
+You are a multimodal model. You can see images. **Use the `Read` tool on every downloaded file** and visually inspect what it actually depicts. Do this BEFORE referencing the image from any data file.
+
+```
+Read file_path=/absolute/path/to/public/images/samba.jpg
+```
+
+For each image, verify the following before approving it:
+
+1. **Brand match.** If the image represents a named product, does it show the correct brand's logo, wordmark, or trademark graphic?
+   - Nike → Swoosh visible and no other brand logos
+   - adidas → 3-Stripes and/or Trefoil visible, no Swoosh, no "N", no Brooks, no Puma cat
+   - Dior → "Dior" wordmark or CD monogram
+   - Hermès → "H" clasp or Kelly/Birkin silhouette with Hermès marking
+   - Apple → Apple logo, no Samsung/Google/other
+2. **Product match.** If the image is tied to a specific franchise in `solutions.ts` (e.g. "Air Max"), does the shoe in the photo actually look like an Air Max (visible Air unit) vs. a random sneaker?
+3. **No competitor logos.** If you can see **any** competitor's logo anywhere in the frame (even on a background wall, a bystander's shirt, the box the product is sitting on), reject the image.
+4. **No off-brand props.** A Nike shoebox in the corner of an adidas product shot → reject.
+
+**If verification fails**, in order:
+
+1. Retry with a different source from the priority list (Wikimedia Commons almost always has a clean product shot).
+2. If still no luck, **remove that product from `productItems` / that franchise from `solutions`** rather than ship the bad image.
+3. NEVER "just swap the filename" and hope — the file on disk is what ships.
+
+**Checklist to run at the end of Phase 2:**
+
+```bash
+# List every image file with its size
+ls -la public/images/*.jpg public/images/*.png public/images/*.svg 2>/dev/null
+```
+
+Then, for EACH non-logo image, use `Read` on it and log either `VERIFIED: shows real <brand> <product>` or `REJECTED: shows <what-it-actually-is>`. If any rejected image is still referenced from `cards.ts` / `solutions.ts`, **you have failed this step** — fix it before proceeding to Phase 3.
+
+**For sizing**: if an image is ≥ 3MB, resize on macOS with `sips -Z 1200 input.jpg -o output.jpg` or `sips -Z 1200 --setProperty formatOptions 80 input.jpg -o output.jpg` to keep page weight reasonable.
 
 ---
 
@@ -654,9 +706,16 @@ Tier names `Traditional / Signature / Infinite` are Visa-specific — rename to 
 
 ### Step 3.6: Verify Zero Original References
 
-Two comprehensive checks. BOTH must return 0 lines (or only intentional lines) before deploying:
+Three comprehensive checks. ALL must pass before deploying:
 
 ```bash
+# 0. RE-RUN Step 2.3 visual verification for every image referenced from cards.ts / solutions.ts.
+#    Open each file in Read and confirm it still shows the correct brand. Do not trust
+#    earlier verification — if an agent rewrote data files during Phase 3, image paths may
+#    have been shuffled. This check is fast (8-12 Read calls) and catches the #1 UX bug.
+grep -oE '"/images/[^"]+"' src/lib/cards.ts src/lib/solutions.ts | sort -u
+# For each path listed, Read it and confirm brand match.
+
 # 1. Check for any Visa-brand text leaks
 grep -rn "Visa\|visa\.\|#1A1F71\|#141963\|#1434CB" src/ --include="*.tsx" --include="*.ts" | grep -v visaCards | grep -v VisaCard
 
