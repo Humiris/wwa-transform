@@ -134,7 +134,8 @@ Analyze what users ACTUALLY do on this site. Map to correct CTA:
 | SaaS/API (Stripe, Notion) | Try / Book demo | "Start Free" or "Book a Demo" | Demo booking form |
 | Enterprise (Salesforce) | Contact sales | "Contact Sales" | Sales form |
 | Financial (Visa, banks) | Apply / Get card | "Apply Now" | Application form |
-| Marketplace (Airbnb) | Search / Book | "Start Searching" | Search UI |
+| Marketplace — Listings (Airbnb, Booking, Uber) | Search / Book | "Start Searching" | Search UI |
+| Marketplace — C2C (Vinted, Depop, Etsy, eBay) | Sell AND Browse (dual intent) | "Sell Now" + "Start Browsing" | Seller signup modal (personal / pro) |
 | Services (Consulting) | Contact / Meeting | "Book a Call" | Calendar booking |
 | Content (Netflix, Spotify) | Subscribe / Try | "Start Free Trial" | Signup form |
 
@@ -566,6 +567,7 @@ Submit CTA: "Request Appointment" — not "Book a Demo".
   - SaaS with usage pricing (Stripe, Twilio): `estimate_cost(usage)`, `check_availability(region)`
   - Fintech with tiered benefits (Visa, Mastercard, Amex): `compare_tiers(tiers[])`
   - Luxury fragrance house: `get_fragrance_notes(productId)`, `find_boutique(city?)`
+  - Marketplace / C2C (Vinted, Depop, Etsy, eBay): `list_markets(region?)`, `list_categories()`, `get_seller_flow(personal|pro)`, `estimate_fees(price, category)` — sellers and buyers want different info from the same API, and marketplaces have operational data (markets live, fee structure) that doesn't fit search/compare/recommend alone.
 
 **`src/lib/brand-config.ts`** — Logo:
 - Download logo via WebSearch: "{brand} logo SVG wikipedia" or "{brand} press kit"
@@ -648,6 +650,16 @@ The default template uses a SaaS/tech aesthetic (split layout, colored gradient 
 - Blue/navy color palette
 - Stats-heavy design, trust signals
 
+**MARKETPLACE / C2C (Vinted, Depop, Etsy, eBay, Poshmark):**
+- **Hero**: carousel of category solutions with lifestyle photography (real people + items — NOT isolated product shots). Hero copy is short and action-oriented ("Dresses, tops, denim, and outerwear — secondhand").
+- **CTAs**: dual-intent, always two buttons — primary "Sell Now" (solid brand color) + secondary "Start Browsing" (outline or darker brand color). Never "Shop Now" alone; a marketplace's sellers are half the audience.
+- **Stats bar**: members / markets / lifetime GMV / seller-fees. Example from Vinted: "80M+ Members · 26 Markets · €10.8B Annual GMV · 0% Selling fees". The zero-fees or low-fees stat is often the single most persuasive number — lead with it if true.
+- **Navigation**: the brand's real category tree (Women / Men / Designer / Kids / Home), plus a "Sell" item that routes to the seller flow.
+- **Feature tiles** (instead of product grid): Buyer Protection, Ship Fast, Designer Authentication, Bundle Discounts, Zero Fees, Wallet — these are *trust & flow* features, not products.
+- **Fonts**: utility sans-serif (Inter, Geist). Marketplaces are utility-first; serif reads luxury and is wrong.
+- **Colors**: most marketplaces use a single bold color (Vinted teal `#09B1BA`, Depop red, Etsy orange, Poshmark pink). Use the brand color boldly — stats band, hero CTAs, feature icons.
+- **No `book-demo-modal` in the classic B2B shape** — see the marketplace variant in the `book-demo-modal.tsx` guidance below.
+
 When transforming, EXPLICITLY adapt the hero and category grid to match the brand's visual DNA. Don't just update text — change the layout pattern.
 
 **`src/components/wwa-panel.tsx`** — ACCOUNT CREATION FLOW:
@@ -662,6 +674,7 @@ The template's account creation asks for "annual income" (makes sense for credit
 | Enterprise | "What's your company size?" |
 | Content/Media | "What genres do you like?" |
 | Financial | Keep "annual income" — it's relevant |
+| Marketplace / C2C | "Are you mostly buying or selling?" + follow-up category interest. Ask BOTH because the primary flow branches on this. |
 
 Also update:
 - `lastAssistantMsg.includes("annual income")` → check for the new question
@@ -731,7 +744,8 @@ These files ship in the template with Visa-shaped placeholders that the ordinary
 
 | File | What to scrub |
 |------|---------------|
-| `src/components/book-demo-modal.tsx` | Ships with B2B fields (CompanySize, AnnualRevenue, Country dropdown, SKU picker) AND an inline Visa wordmark SVG in the header. For luxury / e-commerce brands, rewrite as "Request a Private Appointment" per the luxury pattern above. For SaaS keep B2B but relabel products. For consumer, replace entirely with a newsletter/contact form. In all cases, replace the header SVG with `<img src={BRAND.logoImage} className="brightness-0 invert" />`. The hero's main CTA opens this modal — an untouched modal ships the wrong form and the wrong logo on the most-clicked button. |
+| `src/components/book-demo-modal.tsx` | Ships with B2B fields (CompanySize, AnnualRevenue, Country dropdown, SKU picker) AND an inline Visa wordmark SVG in the header. For luxury / e-commerce brands, rewrite as "Request a Private Appointment" per the luxury pattern above. For SaaS keep B2B but relabel products. For consumer, replace entirely with a newsletter/contact form. **For marketplace / C2C brands**, rewrite as "Open your seller account" — fields: name + email + username + preferred market (dropdown of the brand's live markets only, NOT all countries) + account type (Personal vs Pro) + main category + expected item volume. Drop B2B revenue/size fields entirely. In all cases, replace the header SVG with `<img src={BRAND.logoImage} className="brightness-0 invert" />`. The hero's main CTA opens this modal — an untouched modal ships the wrong form and the wrong logo on the most-clicked button. |
+| `src/lib/cards.ts` for marketplace / C2C brands | Marketplaces have no static product catalog — `productItems` should represent **features / flows / trust signals** (e.g. Vinted Buyer Protection, Ship Fast, Designer Authentication, Vinted Pro, Bundle Discounts, Wallet) rather than products. The existing `ProductItem` fields get repurposed: `annualFee` → price indicator / "Free" / "€5 shipping", `apr` → availability scope ("All markets"), `rewardRate` → headline benefit, `signUpBonus` → onboarding incentive. Document the mapping in a comment block at the top of `cards.ts` so the next maintainer knows the fields are repurposed and not accidental Visa leaks. Don't rename the interface properties unless you're willing to update ~12 component references. |
 | `src/components/assistant-shared.tsx` EmptyState | The welcome-screen logo is **the call button** (clicking it starts the voice call). Ships with an inline Visa wordmark SVG — which means the FIRST FRAME a customer sees before any interaction shows a Visa logo. Replace the `<svg><path d="..." /></svg>` inside the EmptyState button with `<img src={BRAND.logoImage} alt={BRAND.name} />`. Without this fix, every brand transform launches on a Visa logo. |
 | `src/components/live-session-overlay.tsx` | Two inline SVG references render the Visa wordmark in the voice-call overlay (header + animated center). Replace with `<img src={BRAND.logoImage} alt={BRAND.name} />` or swap the SVG path — otherwise the voice call shows Visa. Also rewrite the system-prompt text (role, CTAs, "local banks in 200+ countries") per brand, BUT keep the "TOOL USE IS MANDATORY" block verbatim — it's what makes Gemini Live actually drive the left panel. |
 | `src/lib/gemini-live-client.ts` | The `show_card` / `show_solution` tool descriptions include example IDs (`'chase-sapphire-preferred'`, `'tap-to-pay'`). Gemini Live reads these as strong hints about what valid IDs look like. If you leave them unchanged on a non-Visa brand, the voice call will refuse to invoke the tools or will call them with made-up IDs — and the left panel stays empty during the call. Replace both example IDs with real ids from your brand's `cards.ts` / `solutions.ts` (e.g. `'jadore-edp'`, `'cruise-2026'`). This is the single most common reason voice calls "just talk" without updating the visible panel. |
