@@ -811,37 +811,76 @@ These files ship in the template with Visa-shaped placeholders that the ordinary
 
 ## PHASE 4: Build, Deploy, Verify
 
-### Step 4.0: Slug collision check (BEFORE deploying)
+### Step 4.0: Generate a unique, safe slug (REQUIRED)
 
-Two customers transforming the same brand would both race for the same `wwa.{slug}.codiris.app` subdomain. Always check the registry first:
+**Every transform MUST deploy under a `project-*` slug, not the raw brand name.** Two reasons:
 
-```bash
-SLUG="{brand}"  # e.g. "dior", "ralphlauren", "stripe"
+1. **Safe Browsing safety** — Chrome's brand-phishing classifier flags any subdomain that looks like a well-known brand (`booking.codiris.app`, `apple.codiris.app`, `nike.codiris.app`). Using `project-<brand>-<unique>` breaks that exact-match heuristic. This is a hard requirement for new transforms since the Booking incident (2026-04-21).
+2. **Collision avoidance** — multiple customers transforming the same brand would race for one subdomain. A unique suffix guarantees every customer's deploy has its own URL.
 
-curl -s -o /tmp/claim.json -w "%{http_code}\n" "https://codiris.app/api/wwa/registry/$SLUG"
-cat /tmp/claim.json
+**The required slug shape:**
+
+```
+project-<short-brand>-<4char-hex>
 ```
 
-- **HTTP 404** — slug is free. Continue to Step 4.1.
-- **HTTP 200** — slug is already claimed. Read `entry.owner` and `entry.deployed_url`. Options:
-  1. If you are the owner, keep deploying (you'll update the existing site).
-  2. If not, pick a suffix: `wwa.dior-<yourname>.codiris.app`, `wwa.dior-eu.codiris.app`, or `wwa.dior-2026.codiris.app`. Update `brand-config.ts` `mcpUrl` + the deploy domain accordingly.
-  3. If you need the base slug, open a PR to `public/wwa-registry.json` in the `wwwtowwa` repo requesting a transfer — the current owner reviews.
+- `<short-brand>` — 3-8 letters, lowercase, pointing at the brand but not the full domain. Drop the word most associated with the real brand if the full name is too recognizable. Examples:
+  - `booking.com` → `book24` (NOT `booking`)
+  - `airbnb.com` → `abnb`
+  - `dior.com` → `dior` is fine (not a phishing target yet)
+  - `nike.com` → `nk` or `nike` (borderline — prefer `nk`)
+  - `chase.com` → `chs` (fintech = high-risk — always obfuscate)
+- `<4char-hex>` — generated from `openssl rand -hex 2` (4 hex chars = 65,536 combinations). Never reuse.
 
-**Never deploy over someone else's slug silently.** The registry is the source of truth — update it after a successful first deploy by opening a PR that adds your entry:
+**Generate at the start of Phase 4:**
+
+```bash
+SHORT_BRAND="book24"     # replace per brand
+RANDOM_ID=$(openssl rand -hex 2)
+SLUG="project-${SHORT_BRAND}-${RANDOM_ID}"
+echo "Your slug: $SLUG"
+# e.g. project-book24-a4f2
+```
+
+Save this value — you'll use it in `brand-config.ts`, as the Vercel project name, as the Cloudflare CNAME, and as the alias.
+
+**Collision check against the registry:**
+
+```bash
+curl -s -o /tmp/claim.json -w "%{http_code}\n" "https://codiris.app/api/wwa/registry/$SLUG"
+```
+
+- **HTTP 404** — slug is free (expected when using the 4-char random suffix). Continue.
+- **HTTP 200** — astronomically unlikely collision. Regenerate `RANDOM_ID` and try again.
+
+**Update brand-config.ts** so every runtime reference to the deploy URL is correct:
+
+```ts
+export const BRAND: BrandConfig = {
+  // ...
+  mcpUrl: `https://wwa.${SLUG}.codiris.app/mcp`,   // replace ${SLUG} with your generated value
+  mcpServerName: `${SLUG}-agent`,                   // used in MCP server name + CLI install command
+};
+```
+
+**Exceptions (grandfathered):** the original 7 brands on `codiris.app/skills` (visa, stripe, dior, ralphlauren, hermes, puma, vinted) still live at `wwa.<brand>.codiris.app` — they pre-date this policy. Do NOT add new transforms at raw-brand subdomains; every new one gets a `project-*` slug.
+
+**After a successful deploy,** open a PR to `public/wwa-registry.json` in `wwwtowwa` adding your entry:
 
 ```json
 {
-  "slug": "{brand}",
+  "slug": "{short-brand}",
   "domain": "{brand}.com",
-  "deployed_url": "https://wwa.{brand}.codiris.app",
-  "mcp_url": "https://wwa.{brand}.codiris.app/mcp",
-  "type": "{luxury-french|luxury-heritage|fintech|saas|ecommerce|consumer}",
+  "deployed_url": "https://wwa.{slug-with-random}.codiris.app",
+  "mcp_url": "https://wwa.{slug-with-random}.codiris.app/mcp",
+  "type": "{luxury-french|luxury-heritage|fintech|saas|marketplace|marketplace-listings|sportswear|consumer}",
   "color": "{brand primary hex}",
   "first_claimed_at": "YYYY-MM-DD",
-  "owner": "{your-handle}"
+  "owner": "{your-handle-or-email}"
 }
 ```
+
+Note: the registry `slug` field is the **short brand** (e.g. `booking`) so the showcase lookup groups all deploys of that brand together, while `deployed_url` carries the full `project-<brand>-<hex>` subdomain that's unique per transform.
 
 ### Step 4.1: Build
 ```bash

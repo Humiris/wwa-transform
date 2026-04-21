@@ -50,9 +50,16 @@ export interface BrandConfig {
   // Social/links
   websiteUrl: string;
 
-  // MCP agent endpoint — served by /src/app/mcp/route.ts
-  mcpUrl: string; // Public URL, e.g. "https://wwa.brand.codiris.app/mcp"
-  mcpServerName: string; // CLI identifier, e.g. "brand-agent"
+  // Deploy slug — MUST follow the pattern `project-<short-brand>-<4char-hex>`.
+  // This is REQUIRED (Safe Browsing + collision avoidance — see SKILL.md Step 4.0).
+  // Generate with: openssl rand -hex 2  →  project-book24-a4f2
+  // The deployed URL is `https://wwa.${slug}.codiris.app`.
+  // Never use the raw brand name as the slug for NEW transforms.
+  slug: string; // e.g. "project-book24-a4f2"
+
+  // MCP agent endpoint — served by /src/app/mcp/route.ts. Derived from slug.
+  mcpUrl: string; // Public URL, e.g. "https://wwa.project-book24-a4f2.codiris.app/mcp"
+  mcpServerName: string; // CLI identifier, e.g. "project-book24-a4f2-agent"
 }
 
 // ============================================================
@@ -101,6 +108,9 @@ export const BRAND: BrandConfig = {
 
   websiteUrl: "https://example.com",
 
-  mcpUrl: "https://wwa.brand.codiris.app/mcp",
-  mcpServerName: "brand-agent",
+  // REQUIRED: replace with your generated slug (see SKILL.md Step 4.0).
+  // Pattern: project-<short-brand>-<4char-hex>
+  slug: "project-brand-0000",
+  mcpUrl: "https://wwa.project-brand-0000.codiris.app/mcp",
+  mcpServerName: "project-brand-0000-agent",
 };
