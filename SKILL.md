@@ -614,6 +614,7 @@ Submit CTA: "Request Appointment" — not "Book a Demo".
 - The `cards-browse-panel.tsx` and `wwa-panel.tsx` CardCarousel show product images with name/price overlay
 - Do NOT use Card3D for fashion, SaaS, e-commerce, or any non-card company — it renders a credit card with chip and magnetic stripe
 - The file contains hardcoded Visa SVG paths and a `1-800-VISA` customer-service phone. Even if the component is never rendered, the audit grep will still flag those strings. For non-card brands, either **delete `card-3d.tsx` entirely** or scrub the hardcoded Visa strings before running the audit.
+- **Specific residue check** — `template/src/components/wwa-panel.tsx` line ~68 still renders `<Card3D card={card} size="sm" onClick={...} />` inside the `CardCarousel` component. Every non-card transform MUST replace that line with a photo tile (e.g. `<img src={card.image} .../>` wrapped in a button). Confirmed on Airbnb sim — the template ships with this leak and it has to be edited in-place.
 
 **`src/components/cards-browse-panel.tsx`** — PRODUCT DETAIL VIEW (non-credit-card companies):
 
@@ -710,6 +711,8 @@ Similar to C2C marketplaces but asymmetric — travellers/buyers are the primary
 - **Navigation**: Hotels · Apartments · Villas · Hostels · B&Bs · Holiday homes · Resorts · plus "List your property" as the host entry.
 - **`src/lib/cards.ts` repurposing**: the 9-15 `productItems` represent stay categories (Hotels/Apartments/Villas/etc.), NOT individual properties — the same repurposing convention as C2C features but with category shape.
 - **Optional `src/lib/destinations.ts`**: listings marketplaces almost always have a destinations catalog. Create this file with `{ id, city, country, region, heroImage, propertyCount }[]` and wire a `list_destinations(region?)` MCP tool to it. Vinted uses `list_markets(region?)` for country markets; Booking uses `list_destinations(region?)` for cities; Uber would use `list_cities(country?)`. Same shape, different primary axis.
+- **Optional `src/lib/experiences.ts`** (for brands that sell **activities** alongside stays — Airbnb Experiences, Klook, Viator, GetYourGuide, Hotels.com Spots): `{ id, city, title, type, price, duration, image }[]`. Experiences aren't stays (no overnight axis) and aren't destinations (they're bookable events) — they need their own dataset. Wire a `find_experience(city?, type?)` MCP tool. Skip this file if the brand only sells stays.
+- **Premium tier within the marketplace** — Airbnb Luxe, Booking Genius, VRBO Premier Partner, Expedia One Key. These are *tiers-within-the-marketplace* that carry extra service slots (trip designer, pre-stocked pantry, airport transfer, priority support). The flat `productItems[].tier` field in the template captures the label but not the extras. If the premium tier matters to the brand story, create a `premium-tier.ts` with `{ features: string[], amenities: string[], support: string }` and add a fifth MCP tool `get_premium_tier()`. Otherwise just flag the tier with a single card in `productItems` and accept the simplification.
 - **Fonts**: utility sans-serif (Inter, Geist). Same as C2C.
 - **Colors**: a confident primary color (Booking blue `#003580`, Airbnb red `#FF5A5F`, Expedia yellow `#FFC72C`) — the primary drives the search form, stats bar, and trending grid chrome.
 
