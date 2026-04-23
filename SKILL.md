@@ -631,7 +631,9 @@ Submit CTA: "Request Appointment" — not "Book a Demo".
   - Marketplace / Listings (Booking, Airbnb, VRBO, Expedia, Agoda): `search_stays(destination?, checkIn?, checkOut?, guests?, category?, priceMax?)` returning mocked stay results with price/currency/rating/reviewCount (no need to hit real inventory APIs), `list_destinations(region?, country?)` backed by `src/lib/destinations.ts`, and optionally `get_host_flow()` for the host-onboarding path.
   - Retail / Multi-brand (Sephora, Nordstrom, Net-A-Porter, Farfetch): `list_brands(category?, featuredOnly?)` backed by `src/lib/brands.ts`, `find_shade_match(undertone?, coverage?, finish?)` for beauty, `get_routine(skinType?, concern?, budget?)` for skincare, `get_fragrance_notes(productId)` backed by `src/lib/fragrances.ts`. Extend `search_products` with a `brand?` arg — customers ask "foundations from Rare Beauty under €50" and the default signature doesn't support that.
   - Outerwear / Technical (Canada Goose, Arc'teryx, Moncler, The North Face, Patagonia): `check_warmth(temperature_c, activity)` — a **translation tool** (conditions → product); `compare_parkas(ids[])` extended for fill-power/weight/TEI spec axes; `get_heritage(yearFrom?, yearTo?)` from `heritage.ts`; `find_store(city?, country?)` for flagships with `note` field carrying experiential-retail differentiator ("Cold Room", "Pinnacle Room", "Worn Wear repair"); `get_sustainability(productId?)` returning sourcing + materials detail. Extend `search_products` with `gender?` and `tei?` args.
-  - Fashion editorial-minimalist / fast-fashion (Zara, H&M, Uniqlo, COS, ARKET, Massimo Dutti): `list_collections()` — parallel capsule sub-lines from `src/lib/collections.ts` (these don't map onto gender/category axes); `find_fit(bodyShape?, occasion?, season?)` — another translation tool (sibling to `check_warmth`); `get_size_guide(category, gender)` returning EU/UK/US size matrices with measurements — **new MCP tool pattern** for mass-fashion brands with real size charts (skip for luxury — bespoke — and beauty — shades instead); `find_store(city?, country?)`. Extend `search_products` with `gender?`, `collection?`, `material?` args.
+  - Fashion editorial-minimalist (Zara, COS, ARKET, & Other Stories, Massimo Dutti): `list_collections()` — parallel capsule sub-lines from `src/lib/collections.ts`; `find_fit(bodyShape?, occasion?, season?)` translation tool (sibling to `check_warmth`); `get_size_guide(category, gender)` returning EU/UK/US matrices — **new MCP tool pattern** for any mass-fashion brand with real size charts. Skip for luxury (bespoke) and beauty (shades instead). Extend `search_products` with `gender?`, `collection?`, `material?`.
+  - Fashion mass-market pop (H&M, Uniqlo, Gap, Mango, Primark, Forever 21): same core tool set as editorial-minimalist, PLUS extend `search_products` with a **`tech?` arg** for proprietary material technologies (HEATTECH / AIRism / Supima / Ultra Light Down / BlockTech for Uniqlo; CONSCIOUS / Recycled / Organic Cotton for H&M). Critical because customers ask "HEATTECH base layer for -10°C" and the natural query needs the tech axis to resolve — don't overload `material` with it.
+  - Fashion marketplace online (ASOS, Shein, Nasty Gal, Boohoo): `list_brands(category?, featuredOnly?)` backed by `src/lib/brands.ts`; `list_collections()` for own-label sub-lines; `find_fit(bodyShape?, occasion?, season?, sizeRange?)` — extend with sizeRange for size-inclusive brands; `get_size_guide(category, gender, sizeRange?)` — per-range cut measurements (curve cut ≠ petite cut, not just number); **`check_delivery(postcode?, country?)`** — NEW translation tool for Premier/Prime/Saver eligibility (service-eligibility translator, sibling to `check_warmth`). Extend `search_products` with `brand?`, `gender?`, **`sizeRange?`** (`"curve" | "petite" | "tall" | "maternity" | "standard"`).
   - **NEW TOOL CATEGORY — "translation tools"** (conditions → product): `check_warmth(temp, activity)` is the first. Other candidates across brand types: footwear `check_fit(usSize, width, foot-shape)`; skincare `check_compatibility(drug, pregnancy)`; luggage `check_airline_allowance(airline, class)`. These are neither `search` nor `recommend` nor `compare` — they translate external conditions into product filters. Document as a sibling to the three classic MCP verbs.
 
 **`src/lib/brand-config.ts`** — Logo:
@@ -689,9 +691,9 @@ The default template uses a SaaS/tech aesthetic (split layout, colored gradient 
 - **Colors**: Black, white, cream, gold — no blue/purple accents
 - **Motion**: Slow, gentle (1-2s transitions), long fade-ins
 
-**FASHION — EDITORIAL MINIMALIST / FAST-FASHION (Zara, H&M, Uniqlo, COS, ARKET, Massimo Dutti, & Other Stories):**
+**FASHION — EDITORIAL MINIMALIST (Zara, COS, ARKET, & Other Stories, Massimo Dutti):**
 
-Sits between French luxury (Dior) and American heritage (Ralph Lauren) — mono-brand mono-color fashion with rapid-turn seasonal drops, no heritage narrative, maximal typography contrast. Distinct enough to need its own sub-section.
+Mono-brand mono-color fashion with rapid-turn seasonal drops, no heritage narrative, maximal typography contrast. The pure-B&W editorial-gallery aesthetic. Distinct from its mass-market cousin (H&M / Uniqlo / Gap / Mango) which uses color-friendly pop aesthetics.
 
 - **Palette**: **pure black + pure white, NO accent color**. This is the signature — monochrome is the brand. Don't use the Visa-navy / Sephora-red / any-color pattern; resist the instinct to add an accent. Zara's brand voice IS the restraint.
 - **Typography**: **condensed elongated display serif** for headlines (free equivalents: `Big Shoulders Display`, `Oswald`, `Abril Fatface` — pick the one that matches the brand's wordmark shape). Inter or Helvetica for body. The *contrast* between massive display headlines and tiny body copy is the brand signature — don't temper it.
@@ -715,6 +717,51 @@ Sits between French luxury (Dior) and American heritage (Ralph Lauren) — mono-
   - `find_fit(bodyShape?, occasion?, season?)` — translation tool (sibling to Canada Goose's `check_warmth`; conditions → curated picks)
   - `get_size_guide(category, gender)` — EU/UK/US size matrix with measurements. This is a **new MCP tool pattern** for any mass-fashion brand with real size charts (Zara, Uniqlo, H&M, Gap, ASOS). Luxury brands skip it (bespoke); beauty retailers skip it (shades instead).
   - `find_store(city?, country?)` — flagship physical presence
+
+**FASHION — MASS-MARKET POP (H&M, Uniqlo, Gap, Mango, Primark, Forever 21):**
+
+Cousin to editorial-minimalist but color-friendly and accessible. Distinguished from Zara/COS/ARKET by: bold brand accent color (H&M red, Uniqlo red, Gap navy), pop-magazine aesthetic (pink/olive/cream seasonal backgrounds, NOT pure B&W), entry-level pricing (£4.99–£14.99 basics vs Zara's £19.95 floor), youth-dedicated sub-line (H&M's Divided, Gap's Teen), and first-class Baby + Home categories.
+
+- **Palette**: brand-color primary + accessible pastels. H&M red `#E50010`, Uniqlo red `#E30A18`, Gap navy `#00256C`, Mango camel. Seasonal backgrounds use soft pink / olive / cream / camel — a color accent is expected and welcome (opposite of the Zara rule).
+- **Typography**: **bold chunky sans** (Inter Bold Extended, Helvetica Bold, Noto Sans) — NOT condensed elongated serif. The mass-market signal is confidence and clarity, not editorial drama.
+- **Hero**: color-block rotating panels (2-3 panels, each a different hero offer) OR a "shop-by-trend" tile row (Y2K / Boho / Workwear / Festival / Preppy). Multiple narratives surfaced, not a single editorial moment.
+- **Navigation** includes: Ladies/Woman, Men, Youth sub-line (Divided/Teen), **Kids, Baby, Home** — Baby and Home are first-class top-nav entries, not nested under Kids/Lifestyle. Uniqlo Baby sizing goes 50-100cm.
+- **Product detail view** — like editorial-minimalist but with:
+  - Color swatches as prominent circles (not discrete)
+  - Size grid XS–XXXL PLUS numerical EU 34-46 both shown
+  - **Members price** strikethrough shown ("£29.99 / H&M Member £24.99")
+  - Tech-feature badges where applicable (HEATTECH / AIRism / Supima / Ultra Light Down for Uniqlo; CONSCIOUS / RECYCLED / ORGANIC for H&M)
+  - Accessible price ladder on every tile (entry + aspirational side-by-side)
+- **Product grid** is denser than editorial-minimalist, merch-oriented, with badge flags (NEW / SAVE / BESTSELLER / CONSCIOUS) that would be too loud for Zara but are on-brand here.
+- **Loyalty programme** is first-class chrome: H&M Members, Uniqlo IQ, Gap Good Rewards. Surface in the navbar, the PDP price block, and the book-demo-modal (rewrite as loyalty signup per SKILL.md residues).
+- **Technical-functional tech features** are product-level filters: Uniqlo's HEATTECH/AIRism/Supima/Ultra Light Down/BlockTech/PUFFTECH. Extend `search_products` with a `tech?` arg so customers can filter by proprietary material tech ("HEATTECH base layer for -10°C"). Don't overload `material` with it.
+- **MCP tools** — same as editorial-minimalist plus:
+  - `search_products` extended with `tech?` arg (HEATTECH / Supima / CONSCIOUS / Organic Cotton / Recycled)
+  - `list_collections()` — Uniqlo's Main/U/C/J/+J/JW Anderson/Marimekko; H&M's Main/Studio/Divided/Conscious Exclusive + designer collabs
+
+**FASHION MARKETPLACE — ONLINE (ASOS, Shein, Nasty Gal, Boohoo, Zalando):**
+
+Pure-play online retailers with substantial own-label catalogues + stocked external brands. Distinct from `RETAIL — MULTI-BRAND` (Sephora / Nordstrom / Net-A-Porter) which are primarily curated external-brand retailers. Distinct from `marketplace-listings` (Booking / Airbnb) which is host-traveler dynamics.
+
+- **Palette**: dark-minimalist with an electric accent. ASOS true black + neon yellow; Shein black + pink; Zalando white + orange. The neon/electric accent is the "online-only youth" signal.
+- **Typography**: bold chunky sans with confident presence. Inter Bold Extended or Helvetica Bold Extended.
+- **Signature nav pattern** — **size-inclusive top-level entries**: Curve & Plus / Petite / Tall / Maternity as first-class nav categories alongside Women / Men / Kids. This is unique to online-only fashion marketplaces (ASOS pioneered it; Boohoo / Nasty Gal followed). SKIP this for Zalando/Nordstrom/Net-A-Porter which keep size ranges as filter chips instead.
+- **Hero**: weekly editorial cover ("Trending now", "Fit of the week", "We're obsessed with…") + a "shop-by-size-range" tile row. Model-led street-style photography, NOT studio white-background.
+- **Product detail view**:
+  - Prominent brand badge above product name ("NIKE · Air Max 90")
+  - Size + fit info block ("Model wears UK 8 / size S, 5'10"") — ASOS-signature
+  - Stock indicator ("Only 3 left in size M")
+  - Star rating + review count from the brand's own reviews
+  - Premier / Prime / Saver delivery eligibility teaser
+- **Required `src/lib/brands.ts`** + `list_brands(category?, featuredOnly?)` MCP tool (same convention as multi-brand beauty retail — ASOS stocks 850+ brands).
+- **Required `src/lib/collections.ts`** for own-label sub-lines (ASOS Design / Edition / 4505 / Weekend Collective / Made In / Topshop / Topman).
+- **MCP tools** — substantial extension:
+  - `search_products` extended with `brand?`, `sizeRange?` (`"curve" | "petite" | "tall" | "maternity" | "standard"`), `gender?`
+  - `list_brands(category?, featuredOnly?)`
+  - `list_collections()`
+  - `find_fit(bodyShape?, occasion?, season?, sizeRange?)` — extended with sizeRange
+  - `get_size_guide(category, gender, sizeRange?)` — UK/EU/US PLUS per-range cut measurements (curve cut differs from petite cut, not just the number)
+  - `check_delivery(postcode?, country?)` — NEW translation tool (conditions → Premier / Saver / Standard eligibility). Sibling to Canada Goose's `check_warmth`. General pattern: a translation tool for service eligibility is a third category beside product-search and product-recommend.
 
 **LUXURY — AMERICAN HERITAGE / PREP (Ralph Lauren, Tommy Hilfiger, J.Crew, L.L. Bean, Brooks Brothers):**
 - **Hero**: Full-bleed runway OR editorial lifestyle photograph (equestrian, sailing, library, cabin interior — NOT Paris-minimalist void). Static image with 1.04 scale-on-mount is fine — most of these brands have no public video CDN.
