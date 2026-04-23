@@ -401,6 +401,33 @@ Every project MUST have (minimum):
 - 1 image per product (category-matched Unsplash)
 - Favicon from `https://www.google.com/s2/favicons?domain={domain}&sz=64`
 
+### Catalog size — minimum item count per brand type (REQUIRED)
+
+A thin catalog kills the demo. Every e-commerce, retail, or fashion brand transform MUST ship at least **100 real product items** spread across the brand's natural segments. The agent needs enough depth to recommend and compare realistically; an 8-item catalog makes every filter / category / chat prompt dead-end immediately.
+
+| Brand type | Minimum items | Split guidance |
+|------------|---------------|----------------|
+| Fashion mono-brand (Zara, H&M, Uniqlo, Ralph Lauren, Dior RTW) | **100+** | 40 Woman / 30 Man / 15 Kids / 10 Accessories / 5 Home — adjust to brand reality |
+| Fashion multi-brand retailer (Nordstrom, Net-A-Porter, Farfetch, Zalando) | **150+** | 50 Woman / 40 Man / 25 Kids / 20 Shoes / 15 Bags — plus 20+ brand catalogue entries |
+| Beauty multi-brand retailer (Sephora, Ulta, LookFantastic) | **120+** | 30 Skincare / 30 Makeup / 25 Fragrance / 15 Hair / 10 Body / 10 Men — plus 20+ brands |
+| Beauty mono-brand (L'Oréal, Estée Lauder, MAC) | **80+** | 25 Skincare / 25 Makeup / 15 Fragrance / 10 Hair / 5 Men |
+| Outerwear / Technical (Canada Goose, Arc'teryx, Patagonia) | **60+** | 25 Men / 20 Women / 10 Kids / 5 Accessories — fewer items OK because parkas are expensive/curated |
+| Luxury mono-brand (Hermès, Chanel — no RTW catalog online) | **50+** | Scale to what's published; bags + fragrance + leather small goods heavy |
+| Sportswear (Nike, Puma, Adidas, Under Armour) | **100+** | 30 Men / 30 Women / 20 Kids / 15 Footwear / 5 Accessories |
+| Marketplace listings (Airbnb, Booking) | **100+ stays × 40+ destinations** | destinations.ts covers the cities, cards.ts covers the stays |
+| Marketplace C2C (Vinted, Depop, Etsy) | **80+ feature tiles + category mock listings** | cards.ts holds features/flows, not individual listings |
+| Fintech / SaaS | 6-12 products is fine | Few products is brand-accurate (Visa has ~8 tiers, Stripe has ~10 products) |
+
+**How to reach 100+ on an e-commerce transform:**
+1. Start by listing the brand's real product segments (Woman/Man/Kids/Home/Beauty for Zara; Skincare/Makeup/Fragrance for Sephora). Write the minimum count per segment before downloading images.
+2. Scrape representative products from the brand's own site when possible, even if names are paraphrased — the image + name + price + material gives the agent enough to recommend.
+3. When the brand CDN blocks (Zara, Dior, etc.), fall through to Unsplash with segment-matched searches. Each segment needs 20+ unique photos; guard against duplicates.
+4. Every product entry in `cards.ts` MUST be a real-looking record with: name + price + segment (gender/category) + material/size + badge. Agent recommendations against a half-populated catalog feel hollow.
+5. The homepage doesn't need to render all 100+ — a carousel of 12-16 is enough. But `/search`, `/category/{x}`, and MCP `search_products` must return the full set when filtered.
+
+**Quality gate (add to Phase 4 verification):**
+- `curl https://wwa.{slug}.codiris.app/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search_products","arguments":{}}}'` → `count: 100+` for any e-commerce brand type. If below threshold, the transform is incomplete.
+
 ### Matching Unsplash Photos to Categories
 
 | Company Type | Use These Photos |
@@ -1077,3 +1104,4 @@ Before saying "done", verify:
 - [ ] Zero references to any other company (Visa, etc.)
 - [ ] The page structure makes sense for THIS type of company
 - [ ] CTAs match what the company actually wants users to do
+- [ ] **Catalog depth meets the minimum for this brand type** (see Phase 2 "Catalog size" table). For e-commerce: 100+ product entries in `cards.ts`, spread across the brand's real segments (Woman/Man/Kids/etc). Verify with `search_products` returning `count ≥ 100` via MCP.
