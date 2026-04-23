@@ -421,12 +421,24 @@ A thin catalog kills the demo. Every e-commerce, retail, or fashion brand transf
 **How to reach 100+ on an e-commerce transform:**
 1. Start by listing the brand's real product segments (Woman/Man/Kids/Home/Beauty for Zara; Skincare/Makeup/Fragrance for Sephora). Write the minimum count per segment before downloading images.
 2. Scrape representative products from the brand's own site when possible, even if names are paraphrased — the image + name + price + material gives the agent enough to recommend.
-3. When the brand CDN blocks (Zara, Dior, etc.), fall through to Unsplash with segment-matched searches. Each segment needs 20+ unique photos; guard against duplicates.
+3. When the brand CDN blocks (Zara, Dior, etc.), fall through to Unsplash with segment-matched searches. Each segment needs 30+ unique photos; guard against duplicates.
 4. Every product entry in `cards.ts` MUST be a real-looking record with: name + price + segment (gender/category) + material/size + badge. Agent recommendations against a half-populated catalog feel hollow.
-5. The homepage doesn't need to render all 100+ — a carousel of 12-16 is enough. But `/search`, `/category/{x}`, and MCP `search_products` must return the full set when filtered.
+
+**Per-section rendering rule (NEW, critical — addresses "there's not a lot of items on Men's" feedback):**
+
+The catalog-size rule above covers `cards.ts` data depth. The **rendering cap** is a separate trap: template components often render `homes.slice(0, 12)` or similar, so even with 100+ items in data, the user sees a thin 8-tile grid.
+
+- **Homepage carousel rows**: 12-16 tiles OK (carousel UX, user scrolls horizontally).
+- **Category / gender inner pages** (when user clicks "Men's" or "Woman" from nav or a tile): **MUST render the full filtered catalog, no slice cap.** If the brand has 30 Men's items, the Men's page shows 30, not 12. Minimum per-section display:
+  - Woman / Man: 30+ tiles visible on the inner page
+  - Kids / Baby: 15+ tiles
+  - Accessories / Home / Beauty: 10+ tiles
+- **Fix pattern**: in `inner-page.tsx` (or equivalent), the category grid must `productItems.filter(p => p.issuer === gender)` without a trailing `.slice()`. If the page feels too long, use pagination / "Load more" — not a silent truncation.
+- Grep check before shipping: `grep -rnE '\.slice\(0,\s*(6|8|12)' src/components/inner-page.tsx src/components/hero-section.tsx src/app/page.tsx` — if caps are present on gender/category paths, they're bugs.
 
 **Quality gate (add to Phase 4 verification):**
-- `curl https://wwa.{slug}.codiris.app/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search_products","arguments":{}}}'` → `count: 100+` for any e-commerce brand type. If below threshold, the transform is incomplete.
+- `curl https://wwa.{slug}.codiris.app/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search_products","arguments":{}}}'` → `count: 100+` for any e-commerce brand type.
+- Curl the rendered HTML of the Men's / Woman's category pages and count `<img` tags for product tiles. Must be 30+ each (for mono-brand fashion) or 40+ (for multi-brand fashion). If below threshold, UI has a rendering cap that needs removal — the transform is incomplete.
 
 ### Matching Unsplash Photos to Categories
 
