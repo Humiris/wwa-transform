@@ -440,6 +440,16 @@ The catalog-size rule above covers `cards.ts` data depth. The **rendering cap** 
 - `curl https://wwa.{slug}.codiris.app/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search_products","arguments":{}}}'` → `count: 100+` for any e-commerce brand type.
 - Curl the rendered HTML of the Men's / Woman's category pages and count `<img` tags for product tiles. Must be 30+ each (for mono-brand fashion) or 40+ (for multi-brand fashion). If below threshold, UI has a rendering cap that needs removal — the transform is incomplete.
 
+**Post-deploy smoke check (catches stale-alias bugs):** after `vercel alias set`, always re-verify that the alias points to the LATEST deploy. A common failure mode: you fix the code locally, run `npx vercel --prod`, but forget to re-alias — so `wwa.{slug}.codiris.app` continues pointing to the previous (broken) deploy. The Zara/Uniqlo/H&M/ASOS retrofit pass uncovered 4 stale aliases where the uncap code was already correct in git but not reflected live. Always run:
+
+```bash
+npx vercel --prod --yes 2>&1 | tee /tmp/deploy.log
+DEPLOY_URL=$(grep -oE 'https://[a-z0-9-]+\.vercel\.app' /tmp/deploy.log | head -1)
+npx vercel alias set "$DEPLOY_URL" wwa.{slug}.codiris.app
+# Then verify:
+curl -s https://wwa.{slug}.codiris.app/ | grep -c 'aspect-\[3/4\]\|aspect-\[4/5\]\|aspect-square'  # rough product-tile count
+```
+
 ### Matching Unsplash Photos to Categories
 
 | Company Type | Use These Photos |
