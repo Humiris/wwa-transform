@@ -206,7 +206,47 @@ curl -L -o "public/images/{name}.jpg" "{url}" \
 
 ### Image Source Priority (USE IN THIS ORDER)
 
-**For named products/franchises** (Samba, Air Jordan 1, Stan Smith, Lady Dior, Birkin, etc.), priority is:
+**For e-commerce catalogs (fashion retailers, beauty retailers, online-only fashion), always try method 0 FIRST:**
+
+**0. Scrape the brand's SSR catalog JSON via Chrome MCP** — modern e-commerce sites (Zara, H&M, ASOS, Nordstrom, Sephora, etc.) ship the full product grid as a JSON blob inside a `<script>` tag on every category page. Server-side curl gets WAF-blocked, but Chrome MCP with an organic-looking tab has no trouble reading the DOM.
+
+Two flavors to look for:
+
+- **JSON-LD `<script type="application/ld+json">`** (cleanest — H&M, many schemas). Has `@type: Product` entries with `name`, `image[]`, `offers.price` ready to `JSON.parse`.
+- **Raw hydration JSON** (Zara, ASOS — biggest `<script>` that contains the brand's CDN hostname). Not always valid JSON; regex out the image URL pattern (e.g. `/static\.zara\.net\/photos\/[^"'\s]+\.jpg/g` or `/products\/[a-z0-9-]+\/\d+-\d+[a-z0-9-]*/gi`) and dedupe by product id.
+
+Pattern that works today (verified on Zara 259 · H&M 216 · ASOS 365 · Uniqlo 54 scrapes):
+
+```js
+// In Chrome MCP, navigate to e.g. https://www.zara.com/uk/en/woman-dresses-l1066.html, then:
+(() => {
+  const scripts = Array.from(document.querySelectorAll('script'));
+  // JSON-LD path (H&M-style): cleanest
+  const ld = document.querySelector('script[type="application/ld+json"]');
+  if (ld && ld.textContent.includes('"@type":"Product"')) {
+    return JSON.parse(ld.textContent);
+  }
+  // Raw-hydration path (Zara/ASOS): regex
+  const big = scripts.find(s => (s.textContent || '').includes('<brand-cdn-hostname>'));
+  const text = big.textContent;
+  // Adjust regex per brand URL shape
+  const urls = [...new Set((text.match(/https:\/\/static\.zara\.net\/[^"'\s]+\.jpg/g) || []))];
+  return urls;
+})();
+```
+
+Then get the result out of Chrome via a `Blob` download:
+
+```js
+const blob = new Blob([JSON.stringify(catalog)], { type: 'application/json' });
+const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'catalog.json' });
+document.body.appendChild(a); a.click();
+// File lands in ~/Downloads/catalog.json — move to project, feed to cards.ts rewrite
+```
+
+**Hotlink don't download.** Once you have the URLs, put them directly in `cards.ts`'s `image` field — the browser will load them via `<img src>` (no CORS issue on img tags). No local copy needed. Server-side curl typically fails with 403 / 000 (WAF), but that doesn't matter because production serves from users' browsers.
+
+**For named products/franchises** (Samba, Air Jordan 1, Stan Smith, Lady Dior, Birkin, etc.) where you need individual-product photos not a catalog:
 
 1. Brand's own CDN (works for most sportswear — Nike, adidas, Puma, Asics, New Balance)
 2. **Wikipedia / Wikimedia Commons** — the category page `commons.wikimedia.org/wiki/Category:{Brand}_{Product}` has real, licensed product photos for every iconic sneaker, boot, bag, watch, perfume, etc.
