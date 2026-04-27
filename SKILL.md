@@ -691,6 +691,7 @@ Submit CTA: "Request Appointment" — not "Book a Demo".
   - Luxury fragrance house: `get_fragrance_notes(productId)`, `find_boutique(city?)`
   - Marketplace / C2C (Vinted, Depop, Etsy, eBay): `list_markets(region?)`, `list_categories()`, `get_seller_flow(personal|pro)`, `estimate_fees(price, category)` — sellers and buyers want different info from the same API, and marketplaces have operational data (markets live, fee structure) that doesn't fit search/compare/recommend alone.
   - Marketplace / Listings (Booking, Airbnb, VRBO, Expedia, Agoda): `search_stays(destination?, checkIn?, checkOut?, guests?, category?, priceMax?)` returning mocked stay results with price/currency/rating/reviewCount (no need to hit real inventory APIs), `list_destinations(region?, country?)` backed by `src/lib/destinations.ts`, and optionally `get_host_flow()` for the host-onboarding path.
+  - Marketplace / Rentals — Residential (Joivy, Spotahome, HousingAnywhere, Uniplaces): `search_rentals(city?, duration_months?, room_type?, max_rent?, available_from?)` — different param shape from `search_stays` (months not nights, single move-in date not check-in/check-out range, room type not category). `find_co_living(city?, age_range?)` translation tool. `book_viewing(propertyId, date)` for tour scheduling — no "reserve" semantics. `get_lease_terms(propertyId)` — minimum lease, deposit, notice period, utilities included. `list_destinations(country?)` backed by `destinations.ts`. Skip `search_stays` / `find_experience` / `find_boutique` — wrong domain.
   - Retail / Multi-brand (Sephora, Nordstrom, Net-A-Porter, Farfetch): `list_brands(category?, featuredOnly?)` backed by `src/lib/brands.ts`, `find_shade_match(undertone?, coverage?, finish?)` for beauty, `get_routine(skinType?, concern?, budget?)` for skincare, `get_fragrance_notes(productId)` backed by `src/lib/fragrances.ts`. Extend `search_products` with a `brand?` arg — customers ask "foundations from Rare Beauty under €50" and the default signature doesn't support that.
   - Outerwear / Technical (Canada Goose, Arc'teryx, Moncler, The North Face, Patagonia): `check_warmth(temperature_c, activity)` — a **translation tool** (conditions → product); `compare_parkas(ids[])` extended for fill-power/weight/TEI spec axes; `get_heritage(yearFrom?, yearTo?)` from `heritage.ts`; `find_store(city?, country?)` for flagships with `note` field carrying experiential-retail differentiator ("Cold Room", "Pinnacle Room", "Worn Wear repair"); `get_sustainability(productId?)` returning sourcing + materials detail. Extend `search_products` with `gender?` and `tei?` args.
   - Fashion editorial-minimalist (Zara, COS, ARKET, & Other Stories, Massimo Dutti): `list_collections()` — parallel capsule sub-lines from `src/lib/collections.ts`; `find_fit(bodyShape?, occasion?, season?)` translation tool (sibling to `check_warmth`); `get_size_guide(category, gender)` returning EU/UK/US matrices — **new MCP tool pattern** for any mass-fashion brand with real size charts. Skip for luxury (bespoke) and beauty (shades instead). Extend `search_products` with `gender?`, `collection?`, `material?`.
@@ -885,6 +886,54 @@ Similar to C2C marketplaces but asymmetric — travellers/buyers are the primary
 - **Colors**: a confident primary color (Booking blue `#003580`, Airbnb red `#FF5A5F`, Expedia yellow `#FFC72C`) — the primary drives the search form, stats bar, and trending grid chrome.
 
 When transforming, EXPLICITLY adapt the hero and category grid to match the brand's visual DNA. Don't just update text — change the layout pattern.
+
+**MARKETPLACE / RENTALS — RESIDENTIAL (Joivy, Spotahome, HousingAnywhere, Uniplaces, The Student Hotel, Kabute, Casavo):**
+
+**Distinct from listings-marketplace (Booking/Airbnb)** — long-term residential rentals (1–24 months), not nightly stays. The vocabulary, pricing model, transaction flow, and visual surfaces are different enough that listings-marketplace guidance leads you wrong. Verified across the Joivy transform.
+
+- **Vocabulary swap (CRITICAL — do a sweep)**:
+  - "Stay" → "Rental" or "Tenancy"
+  - "Night" / "Nights" → "Month" / "Months"
+  - "Check-in / check-out" → "Move-in date / Move-out date"
+  - "Guests" → "Tenants" / "Residents" (or "Roommates" for co-living)
+  - "Reserve" / "Book this stay" → **"Schedule a viewing"** or "Apply" or "Request a tour"
+  - "Free cancellation" → "Lease flexibility" / "Notice period" (typically 30-60 days)
+  - "Trip" / "Vacation" → just remove
+  - "Hotel" / "Resort" → "Building" / "Residence" / "Apartment block"
+- **Hero / search form fields** (different from Booking's destination/check-in/check-out/guests):
+  - **City** (dropdown of live markets)
+  - **Move-in date** (single date picker, not a range — open-ended duration)
+  - **Duration** — radio or pills: 1-3 mo / 3-6 mo / 6-12 mo / 12+ mo
+  - **Room type** — Entire studio / 1-bed / Co-living room / Shared apartment / Family suite
+  - **Monthly budget** (single slider — €400-€2,500 typical range)
+  - Primary CTA: "Find a home" or "Search rentals" — not "Search stays"
+- **Stats bar** (different metrics): markets · cities · operating since · average move-in time. Example for Joivy: "8 countries · 50+ cities · since 2007 (DoveVivo) · 24h average viewing booking".
+- **`src/lib/cards.ts` repurposing — DIFFERENT FROM LISTINGS**: `productItems` represent **rental categories** (Studio · Co-living room · 1-bed apartment · 2-bed apartment · Student studio · Shared apartment · Family suite · Pro suite), NOT stay categories (Hotels/Villas). Field mapping:
+  - `issuer` → city/country (not gender, not house — for residential the city is the primary filter)
+  - `tier` → lease duration ("Short-term 1-3 mo" / "Medium 3-6 mo" / "Long-term 6-12 mo" / "Annual 12+ mo")
+  - `annualFee` → monthly rent ("€650 / month")
+  - `apr` → utilities + furnishing ("Utilities included · Furnished" / "Bills excluded · Unfurnished")
+  - `rewardRate` → minimum lease ("3 month minimum")
+  - `signUpBonus` → onboarding offer ("First month -50%" / "No deposit" / "Free Wi-Fi" / "Move in same week")
+  - `applyUrl` → property URL on the brand's site
+- **Property detail view** — **NOT the Airbnb gallery + booking card**. Use:
+  - Photo gallery (room + common spaces + building exterior + neighborhood)
+  - Header: building name + address + city + monthly rent + utilities-included badge
+  - **Lease terms block** (essential — lease duration, deposit amount, notice period, what's included, available-from date)
+  - **Building amenities** (Wi-Fi, kitchen, gym, common lounge, washing machine, bike storage)
+  - **Nearby** (universities, transit, supermarkets — text list, not just a map pin)
+  - **"Schedule a viewing"** primary CTA + "Apply now" secondary
+  - No "Reserve" button. No nightly price calculator. No "guests" picker.
+- **`src/lib/destinations.ts`** stays useful — same shape as listings-marketplace, just `propertyCount` is larger (Joivy has ~5,000 rooms in Milan).
+- **MCP tools** specific to residential rentals:
+  - `search_rentals(city?, duration_months?, room_type?, max_rent?, available_from?)` — instead of `search_stays`. Different param shape.
+  - `find_co_living(city?, age_range?)` — translation tool (sibling to `check_warmth`, `find_fit`, `check_delivery`). Conditions → property pick.
+  - `book_viewing(propertyId, date)` — schedule a tour, NOT a stay reservation.
+  - `get_lease_terms(propertyId)` — minimum lease, deposit, notice period, included utilities. Documenting the contract is the equivalent of Booking's "free cancellation" trust signal.
+  - `get_property(propertyId)`, `compare_properties(ids[])` — same as listings.
+  - **Skip**: `search_stays`, `find_experience`, `find_boutique` — wrong domain.
+- **Fonts**: clean sans-serif (Inter, Söhne). Joivy uses ABC Diatype-adjacent.
+- **Colors**: residential brands lean toward **trust-warm palettes** — deep teal (Joivy `#013F46`), forest green, terracotta, navy. NOT bright vacation-marketing colors (Booking blue, Airbnb red, Expedia yellow). The vibe is "your home", not "your getaway".
 
 **RETAIL — MULTI-BRAND (Sephora, Nordstrom, Net-A-Porter, Farfetch, Selfridges, MatchesFashion):**
 
