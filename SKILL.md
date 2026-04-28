@@ -490,6 +490,36 @@ npx vercel alias set "$DEPLOY_URL" wwa.{slug}.codiris.app
 curl -s https://wwa.{slug}.codiris.app/ | grep -c 'aspect-\[3/4\]\|aspect-\[4/5\]\|aspect-square'  # rough product-tile count
 ```
 
+**MANDATORY: push API keys from a sibling project before declaring "deployed" (catches silent-AI-fallback bug):** every brand-new Vercel project starts with **zero env vars**. Without `GEMINI_API_KEY` / `GOOGLE_GENERATIVE_AI_API_KEY` / `OPENAI_API_KEY`, the AI panel silently falls back to canned `assistant-shared.tsx` strings ("I can help you find..."), and the user thinks the AI is dumb. Caught on the Joivy deploy after the user complained the AI was "stupid". The 200-response on `/api/gemini-key` is the actual smoke check — until that endpoint returns a real key, the demo is broken even if every page renders correctly.
+
+```bash
+# Pull keys from any sibling project that already has them (wwa-vinted is reliable)
+mkdir -p /tmp/sibling-env && cd /tmp/sibling-env && mkdir -p .vercel
+cat > .vercel/project.json << 'EOF'
+{"projectId":"prj_eoF8zwRk4i3blOS7Cy95N9Zn5I1s","orgId":"team_CVjPPr2WoqlNcN6zmRDjk04Q","projectName":"wwa-vinted"}
+EOF
+npx vercel env pull .env.production --environment=production --yes
+
+# Push to the new project via Vercel API
+TOKEN=$(python3 -c "import json; print(json.load(open('/Users/joel/Library/Application Support/com.vercel.cli/auth.json')).get('token',''))")
+TEAM="team_CVjPPr2WoqlNcN6zmRDjk04Q"
+PID=$(cat /tmp/wwa.{slug}/.vercel/project.json | python3 -c "import sys,json; print(json.load(sys.stdin)['projectId'])")
+for k in GEMINI_API_KEY GOOGLE_GENERATIVE_AI_API_KEY OPENAI_API_KEY; do
+  v=$(grep "^${k}=" /tmp/sibling-env/.env.production | head -1 | cut -d= -f2- | sed 's/^"//;s/"$//')
+  curl -s -X POST "https://api.vercel.com/v10/projects/$PID/env?teamId=$TEAM" \
+    -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+    -d "$(python3 -c "import json,sys; print(json.dumps({'key':'$k','value':'$v','type':'encrypted','target':['production','preview','development']}))")"
+done
+
+# REDEPLOY + RE-ALIAS so the new envs take effect (env changes don't apply to existing builds)
+cd /tmp/wwa.{slug} && npx vercel --prod --yes
+# Then alias the new deploy.
+
+# Smoke check — this is the line that proves the AI works:
+curl -s -X POST https://wwa.{slug}.codiris.app/api/gemini-key -H "Content-Type: application/json" -w "\n%{http_code}\n"
+# Must return {"key":"AIza..."} and HTTP 200. Anything else = AI is silently degraded.
+```
+
 ### Matching Unsplash Photos to Categories
 
 | Company Type | Use These Photos |
@@ -692,6 +722,7 @@ Submit CTA: "Request Appointment" — not "Book a Demo".
   - Marketplace / C2C (Vinted, Depop, Etsy, eBay): `list_markets(region?)`, `list_categories()`, `get_seller_flow(personal|pro)`, `estimate_fees(price, category)` — sellers and buyers want different info from the same API, and marketplaces have operational data (markets live, fee structure) that doesn't fit search/compare/recommend alone.
   - Marketplace / Listings (Booking, Airbnb, VRBO, Expedia, Agoda): `search_stays(destination?, checkIn?, checkOut?, guests?, category?, priceMax?)` returning mocked stay results with price/currency/rating/reviewCount (no need to hit real inventory APIs), `list_destinations(region?, country?)` backed by `src/lib/destinations.ts`, and optionally `get_host_flow()` for the host-onboarding path.
   - Marketplace / Rentals — Residential (Joivy, Spotahome, HousingAnywhere, Uniplaces): `search_rentals(city?, duration_months?, room_type?, max_rent?, available_from?)` — different param shape from `search_stays` (months not nights, single move-in date not check-in/check-out range, room type not category). `find_co_living(city?, age_range?)` translation tool. `book_viewing(propertyId, date)` for tour scheduling — no "reserve" semantics. `get_lease_terms(propertyId)` — minimum lease, deposit, notice period, utilities included. `list_destinations(country?)` backed by `destinations.ts`. Skip `search_stays` / `find_experience` / `find_boutique` — wrong domain.
+  - Marketplace / Rentals — Flex (Habyt Flex, Cove, Sonder, Outsite, Mindspace Living, Selina Co-Live): `search_stays(city?, checkIn?, checkOut?, guests?, unitType?, maxRent?, minNights?)` — uses **check-in/check-out range** like Booking, NOT residential-style `duration_months`. Listings carry both per-night AND per-month prices (`nightlyRent` + `monthlyRent` fields). `find_flex_living(preference)` translation tool. `book_stay(propertyId, checkIn, checkOut, guests)` supports days OR months in one tool — NOT `book_viewing`. `get_lease_terms(propertyId)` repurposed for stay terms (free-cancellation window, min nights). `get_living_spaces(propertyId)` for amenities/common-area inventory (rooftop, café, gym, coworking). Skip `search_rentals` / `find_co_living` / `book_viewing` — those are residential-only, wrong domain.
   - Retail / Multi-brand (Sephora, Nordstrom, Net-A-Porter, Farfetch): `list_brands(category?, featuredOnly?)` backed by `src/lib/brands.ts`, `find_shade_match(undertone?, coverage?, finish?)` for beauty, `get_routine(skinType?, concern?, budget?)` for skincare, `get_fragrance_notes(productId)` backed by `src/lib/fragrances.ts`. Extend `search_products` with a `brand?` arg — customers ask "foundations from Rare Beauty under €50" and the default signature doesn't support that.
   - Outerwear / Technical (Canada Goose, Arc'teryx, Moncler, The North Face, Patagonia): `check_warmth(temperature_c, activity)` — a **translation tool** (conditions → product); `compare_parkas(ids[])` extended for fill-power/weight/TEI spec axes; `get_heritage(yearFrom?, yearTo?)` from `heritage.ts`; `find_store(city?, country?)` for flagships with `note` field carrying experiential-retail differentiator ("Cold Room", "Pinnacle Room", "Worn Wear repair"); `get_sustainability(productId?)` returning sourcing + materials detail. Extend `search_products` with `gender?` and `tei?` args.
   - Fashion editorial-minimalist (Zara, COS, ARKET, & Other Stories, Massimo Dutti): `list_collections()` — parallel capsule sub-lines from `src/lib/collections.ts`; `find_fit(bodyShape?, occasion?, season?)` translation tool (sibling to `check_warmth`); `get_size_guide(category, gender)` returning EU/UK/US matrices — **new MCP tool pattern** for any mass-fashion brand with real size charts. Skip for luxury (bespoke) and beauty (shades instead). Extend `search_products` with `gender?`, `collection?`, `material?`.
@@ -933,7 +964,36 @@ When transforming, EXPLICITLY adapt the hero and category grid to match the bran
   - `get_property(propertyId)`, `compare_properties(ids[])` — same as listings.
   - **Skip**: `search_stays`, `find_experience`, `find_boutique` — wrong domain.
 - **Fonts**: clean sans-serif (Inter, Söhne). Joivy uses ABC Diatype-adjacent.
-- **Colors**: residential brands lean toward **trust-warm palettes** — deep teal (Joivy `#013F46`), forest green, terracotta, navy. NOT bright vacation-marketing colors (Booking blue, Airbnb red, Expedia yellow). The vibe is "your home", not "your getaway".
+- **Colors**: residential brands lean toward **trust-warm palettes** — deep teal (Joivy `#015962`), forest green, terracotta, navy. NOT bright vacation-marketing colors (Booking blue, Airbnb red, Expedia yellow). The vibe is "your home", not "your getaway".
+
+**MARKETPLACE / RENTALS — FLEX (Habyt Flex, Cove, Sonder, Mindspace Living, Outsite, Selina Co-Live):**
+
+**Distinct from residential rentals (Joivy)** — flex-living = stays for **days OR months**, not 1+ month minimum. Habyt's pitch is "a stay that moves with you" — book 3 nights or 8 months in the same building, with free cancellation. Verified across the Habyt transform.
+
+- **Vocabulary swap (different from residential)**: keep "stay" and "guests" (NOT "rental" / "tenants"). "Book" or "Book now" (NOT "Schedule a viewing"). "Free cancellation" is the headline trust signal, not "lease flexibility". The whole grammar is closer to extended-stay-hotel than to residential lease.
+- **Hero / search form fields** (closer to Booking's stay form than Joivy's rental form):
+  - **City** (dropdown of live properties, NOT live cities — flex brands often have just 1-3 active buildings)
+  - **Check-in date + Check-out date** (range picker, like Booking) — NOT a single move-in date
+  - **Guests** (1-4 typical)
+  - **Unit type** — Studio / 1-Bed / 2-Bed / Suite (per-property)
+  - Primary CTA: **"Book now"** or **"Search"** — NOT "Find a home" (that's residential).
+- **Pricing model — DUAL TIER**: every listing carries BOTH a per-night price (`€95/night`) AND a per-month price (`€1,450/mo`). The PDP and the booking card need to surface both. Discount messaging: "Stay 7+ nights for X% off", "Stay 30+ nights for X% off". `cards.ts` should have `monthlyRent` AND `nightlyRent` fields (or a single `priceTiers` object).
+- **Tier mapping** (different from residential): `tier` field becomes the stay-length tier — `"Flex 1-3 nights"` / `"Short stay 7+ nights"` / `"Monthly stay"` / `"Long stay 6+ months"` — instead of lease duration.
+- **Property catalog tends to be SMALL**: Habyt Flex has 2 active properties globally (Berlin Waterfront, Truliving Vallecas Madrid). Don't fake a 50-property catalog. Generate 5-10 unit-type variants per real property (different floors, views, slight price spread) for a 20-30 card catalog. Then list "coming soon" cities with `comingSoon: true` flags + a coming-soon UI badge.
+- **`destinations.ts` shape**: add `comingSoon: boolean` and `propertyCount: 0` for non-active cities. The world-map and city grid then render those with a muted "Coming soon" treatment instead of a fake property count.
+- **MCP tools** specific to flex-living (different signatures from residential):
+  - `search_stays(city?, checkIn?, checkOut?, guests?, unitType?, maxRent?, minNights?)` — uses **check-in/check-out range** like Booking, NOT `duration_months` like Joivy. Both nightly + monthly results in one response.
+  - `find_flex_living(preference)` — translation tool (sibling to `find_co_living`). Natural-language → property + unit pick. Includes nights vs. months parsing.
+  - `book_stay(propertyId, checkIn, checkOut, guests)` — supports days OR months in one tool. NOT `book_viewing`.
+  - `get_lease_terms(propertyId)` — repurposed for "stay terms" — free cancellation window (typically 24-48h before), minimum nights, deposit, what's included.
+  - `get_living_spaces(propertyId)` — list amenities + common spaces (rooftop pool, café, cinema room, gym, coworking — Habyt Vallecas style).
+  - `get_property(propertyId)`, `compare_properties(ids[])`, `list_destinations(country?)` — same as residential.
+  - **Skip**: `search_rentals`, `find_co_living`, `book_viewing`, `find_experience` — wrong domain (residential or hotel).
+- **No 3D Matterport tours** typically — flex brands lean on photography + video walkthrough instead. The tours.json should be `{}` and `hasTour()` returns false; the PDP's 3D-tour pill must be conditional (`{tourAvailable && <pill/>}`) so it silently disappears, not breaks.
+- **Hero subhead**: "A stay that moves with you" / "Flexible living, anywhere you go" / "Book for days or months" — emphasize flexibility, NOT permanence.
+- **Trust badges** (real Habyt order): `Free cancellation · Flexible stay · Best price` — these go above the price on the PDP booking card AND on listing tiles.
+- **Colors**: flex-living brands lean **darker, more luxurious** than residential — Habyt is forest green `#00271A` + terracotta `#572411` + cream `#FFFBF1`. NOT trust-warm teal (that's residential). The vibe is "boutique extended-stay hotel", not "your home" or "your getaway".
+- **Fonts**: same clean modern sans (Inter, Söhne) but allow a serif accent for headings on luxury-skewed flex brands (Habyt uses a humanist sans throughout).
 
 **RETAIL — MULTI-BRAND (Sephora, Nordstrom, Net-A-Porter, Farfetch, Selfridges, MatchesFashion):**
 
