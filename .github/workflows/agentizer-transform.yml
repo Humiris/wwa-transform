@@ -95,32 +95,54 @@ jobs:
           EXIT=$?
           set -e
 
+          echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
           if [ $EXIT -ne 0 ]; then
-            echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
-            tail -40 run.log
+            echo "::error::CLI exited $EXIT"
+            tail -60 run.log
             exit $EXIT
           fi
 
-          # Extract the deployed URL from CLI output
+          # Extract the deployed URL from CLI output. NO FALLBACK — if the
+          # CLI didn't print a real deploy URL, that's a failure (the
+          # previous version silently swallowed this and pretended example.codiris.app
+          # was alive when it never deployed).
           DEPLOY_URL=$(grep -oE 'https://[a-z0-9.-]+\.codiris\.app' run.log | head -1)
           if [ -z "$DEPLOY_URL" ]; then
-            DEPLOY_URL="https://$BRAND_SLUG.codiris.app"
+            echo "::error::No deploy URL printed by the CLI — transform did not produce a live deployment"
+            tail -80 run.log
+            exit 2
           fi
           echo "deploy_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
           echo "mcp_url=${DEPLOY_URL}/mcp" >> $GITHUB_OUTPUT
-          echo "Deploy succeeded: $DEPLOY_URL"
+          echo "Deploy URL: $DEPLOY_URL"
 
       - name: Verify MCP and count tools
         id: verify
-        if: steps.agentize.outcome == 'success'
         run: |
           MCP="${{ steps.agentize.outputs.mcp_url }}"
+          # Probe the homepage first — if it doesn't exist we don't even reach the MCP
+          HOMEPAGE_HTTP=$(curl -so /dev/null -w "%{http_code}" --max-time 8 "${{ steps.agentize.outputs.deploy_url }}")
+          echo "Homepage HTTP: $HOMEPAGE_HTTP"
+          if [ "$HOMEPAGE_HTTP" != "200" ]; then
+            echo "::error::Deploy URL returns HTTP $HOMEPAGE_HTTP — site is not live"
+            exit 3
+          fi
+
           TOOLS=$(curl -s -X POST "$MCP" \
             -H 'Content-Type: application/json' \
+            --max-time 8 \
             -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
             | jq '.result.tools | length' 2>/dev/null || echo 0)
           echo "tools=$TOOLS" >> $GITHUB_OUTPUT
           echo "Tools live: $TOOLS"
+
+          # Hard gate: a real Agentizer deploy MUST expose at least one MCP tool.
+          # Zero-tool deploys are template/CLI failures that previously slipped
+          # through as false 'succeeded' jobs.
+          if [ "$TOOLS" -lt 1 ]; then
+            echo "::error::MCP returned 0 tools — generated agentfront has no working MCP. Likely template build error."
+            exit 4
+          fi
 
       - name: Mark job succeeded + persist result
         if: success()
