@@ -1,6 +1,6 @@
 {
   "name": "agentizer",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Agentizer — Turn any website into an AI-powered agentfront. Crawl, generate, deploy in one command.",
   "author": {
     "name": "Iris Lab",

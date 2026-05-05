@@ -1,7 +1,7 @@
 {
   "name": "agentizer",
-  "version": "2.0.0",
-  "description": "Turn any website into an AI-powered agentfront — crawl, generate, deploy in one command.",
+  "version": "2.0.1",
+  "description": "Turn any website into an AI-powered agentfront \u2014 crawl, generate, deploy in one command.",
   "author": {
     "name": "Iris Lab",
     "email": "hello@codiris.app",
@@ -10,7 +10,16 @@
   "homepage": "https://codiris.app/skills",
   "repository": "https://github.com/Humiris/wwa-transform",
   "license": "MIT",
-  "keywords": ["agentizer", "agentfront", "transform", "website", "ai-agent", "deploy", "crawl", "wwa"],
+  "keywords": [
+    "agentizer",
+    "agentfront",
+    "transform",
+    "website",
+    "ai-agent",
+    "deploy",
+    "crawl",
+    "wwa"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Agentizer",
@@ -18,7 +27,15 @@
     "longDescription": "Agentizer crawls any website, analyzes the company (market, products, customers), downloads real images, generates a full Next.js agentfront with AI chat, voice calls, 3D cards, conversational checkout, and deploys to wwa.{domain}.codiris.app. Works with any type of company: SaaS, e-commerce, fintech, enterprise.",
     "developerName": "Iris Lab",
     "category": "Development",
-    "capabilities": ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebFetch"],
+    "capabilities": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Glob",
+      "Grep",
+      "WebFetch"
+    ],
     "websiteURL": "https://codiris.app",
     "privacyPolicyURL": "https://codiris.app/privacy",
     "termsOfServiceURL": "https://codiris.app/terms",
@@ -28,6 +45,7 @@
       "Turn shopify.com into an AI-powered website"
     ],
     "brandColor": "#635BFF",
-    "logo": "./assets/logo.svg"
+    "logo": "./assets/logo-256.png",
+    "logoLarge": "./assets/logo-1024.png"
   }
 }
