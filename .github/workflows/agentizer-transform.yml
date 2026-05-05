@@ -1,0 +1,139 @@
+name: agentizer-transform
+
+# Triggered by /api/agentizer/transform when a caller asks for a fresh
+# deploy. Runs the full agentizer CLI pipeline (crawl → generate →
+# build → vercel deploy → DNS alias) and posts status updates to the
+# Supabase `transform_jobs` table the API created.
+#
+# Inputs come from `workflow_dispatch.inputs` populated by the API.
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: 'Job ID (tx_xxx)'
+        required: true
+        type: string
+      url:
+        description: 'Target website URL to agentize'
+        required: true
+        type: string
+      slug:
+        description: 'Brand slug (lowercase, alphanumeric)'
+        required: true
+        type: string
+
+jobs:
+  transform:
+    name: Agentize ${{ github.event.inputs.url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      JOB_ID: ${{ github.event.inputs.job_id }}
+      TARGET_URL: ${{ github.event.inputs.url }}
+      BRAND_SLUG: ${{ github.event.inputs.slug }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+    steps:
+      - name: Mark job as running + record GitHub run id
+        run: |
+          curl -s -X PATCH \
+            "$SUPABASE_URL/rest/v1/transform_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d "$(jq -n --arg run "${{ github.run_id }}" --arg msg "Workflow started — runner provisioning" \
+                '{status: "running", progress: $msg, github_run_id: ($run | tonumber)}')"
+
+      - name: Checkout agentizer source
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm', cache-dependency-path: 'cli/package-lock.json' }
+
+      - name: Install CLI deps + build
+        working-directory: cli
+        run: |
+          npm ci --silent || npm install --silent
+          npm run build --silent
+
+      - name: Mark progress — crawling
+        run: |
+          curl -s -X PATCH "$SUPABASE_URL/rest/v1/transform_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" -H "Prefer: return=minimal" \
+            -d '{"progress":"Crawling brand site + extracting assets"}'
+
+      - name: Run agentizer CLI (crawl → generate → deploy)
+        id: agentize
+        run: |
+          set -e
+          mkdir -p /tmp/agentizer-out
+          cd /tmp/agentizer-out
+
+          # Run the full pipeline. The CLI writes the deployed project into
+          # ./wwa.{slug}/ and prints the Vercel URL on success.
+          set +e
+          node $GITHUB_WORKSPACE/cli/dist/index.js "$TARGET_URL" 2>&1 | tee run.log
+          EXIT=$?
+          set -e
+
+          if [ $EXIT -ne 0 ]; then
+            echo "exit_code=$EXIT" >> $GITHUB_OUTPUT
+            tail -40 run.log
+            exit $EXIT
+          fi
+
+          # Extract the deployed URL from CLI output
+          DEPLOY_URL=$(grep -oE 'https://[a-z0-9.-]+\.codiris\.app' run.log | head -1)
+          if [ -z "$DEPLOY_URL" ]; then
+            DEPLOY_URL="https://$BRAND_SLUG.codiris.app"
+          fi
+          echo "deploy_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "mcp_url=${DEPLOY_URL}/mcp" >> $GITHUB_OUTPUT
+          echo "Deploy succeeded: $DEPLOY_URL"
+
+      - name: Verify MCP and count tools
+        id: verify
+        if: steps.agentize.outcome == 'success'
+        run: |
+          MCP="${{ steps.agentize.outputs.mcp_url }}"
+          TOOLS=$(curl -s -X POST "$MCP" \
+            -H 'Content-Type: application/json' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+            | jq '.result.tools | length' 2>/dev/null || echo 0)
+          echo "tools=$TOOLS" >> $GITHUB_OUTPUT
+          echo "Tools live: $TOOLS"
+
+      - name: Mark job succeeded + persist result
+        if: success()
+        run: |
+          NAME=$(echo "$BRAND_SLUG" | sed 's/^./\U&/')
+          PAYLOAD=$(jq -n \
+            --arg url    "${{ steps.agentize.outputs.deploy_url }}" \
+            --arg mcp    "${{ steps.agentize.outputs.mcp_url }}" \
+            --arg slug   "$BRAND_SLUG" \
+            --arg name   "$NAME" \
+            --argjson tools "${{ steps.verify.outputs.tools || 0 }}" \
+            '{status:"succeeded", progress:"Deploy complete", result:{name:$name, slug:$slug, url:$url, mcp:$mcp, tools:$tools}}')
+          curl -s -X PATCH "$SUPABASE_URL/rest/v1/transform_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" -H "Prefer: return=minimal" \
+            -d "$PAYLOAD"
+
+      - name: Mark job failed
+        if: failure()
+        run: |
+          ERR="${{ steps.agentize.outputs.exit_code }}"
+          ERR_MSG="Workflow run ${{ github.run_id }} failed at step ${{ github.step }}; exit code $ERR. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X PATCH "$SUPABASE_URL/rest/v1/transform_jobs?id=eq.$JOB_ID" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" -H "Prefer: return=minimal" \
+            -d "$(jq -n --arg msg "$ERR_MSG" '{status:"failed", error:$msg}')"
