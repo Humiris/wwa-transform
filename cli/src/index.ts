@@ -11,24 +11,32 @@ const url = args[0];
 
 if (!url) {
   console.log(`
-  WWA Transform — Turn any website into an agent-first experience
+  Agentizer — Turn any website into an agent-first experience
 
   Usage:
-    wwa-transform <website-url>              Full pipeline: crawl → generate → deploy
-    wwa-transform crawl <url>                Crawl only → outputs brand-data.json
-    wwa-transform generate <brand-data.json> Generate project from crawled data
-    wwa-transform deploy <project-dir>       Deploy existing project
+    agentizer <website-url>                Full pipeline: crawl → generate → deploy
+    agentizer crawl <url>                  Crawl only → outputs brand-data.json
+    agentizer generate <brand-data.json>   Generate project from crawled data
+    agentizer deploy <project-dir>         Deploy existing project
 
   Examples:
-    wwa-transform https://stripe.com
-    wwa-transform crawl https://nike.com
-    wwa-transform generate ./brand-data.json
-    wwa-transform deploy ~/wwa.stripe
+    agentizer https://stripe.com
+    agentizer crawl https://nike.com
+    agentizer generate ./brand-data.json
+    agentizer deploy ~/wwa.stripe
 
   Environment Variables:
     OPENAI_API_KEY              Required for AI chat
     GEMINI_API_KEY              Required for AI chat
     CLOUDFLARE_API_TOKEN        Required for DNS setup
+
+  Quick install (any platform with Node 18+):
+    npx github:Humiris/wwa-transform <url>          # one-shot, no install
+    npm i -g github:Humiris/wwa-transform           # global install
+
+  Or use as a Claude Code / Codex / Cursor skill — see codiris.app/skills.
+
+  (Legacy alias: \`wwa-transform <url>\` still works.)
   `);
   process.exit(0);
 }

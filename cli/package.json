@@ -1,17 +1,34 @@
 {
-  "name": "wwa-transform",
-  "version": "1.0.0",
-  "description": "Transform any website into an AI-powered agent-first experience",
+  "name": "agentizer",
+  "version": "2.0.1",
+  "description": "Agentizer — Turn any website into an AI-powered agent-first experience. Crawl, generate, deploy.",
+  "type": "commonjs",
   "main": "dist/index.js",
   "bin": {
+    "agentizer": "./dist/index.js",
     "wwa-transform": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepare": "tsc",
+    "prepublishOnly": "tsc",
     "dev": "ts-node src/index.ts"
   },
-  "keywords": ["wwa", "agentfront", "ai", "transform", "website"],
+  "keywords": ["agentizer", "wwa", "agentfront", "ai", "transform", "website", "mcp", "claude", "codex"],
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "homepage": "https://codiris.app/skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Humiris/wwa-transform.git",
+    "directory": "cli"
+  },
   "dependencies": {
     "node-html-parser": "^6.1.13"
   },
