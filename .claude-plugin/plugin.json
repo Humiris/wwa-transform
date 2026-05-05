@@ -1,7 +1,7 @@
 {
-  "name": "wwa-transform",
+  "name": "agentizer",
   "version": "2.0.0",
-  "description": "WWA Transform — Turn any website into an AI-powered agentfront. Crawl, generate, deploy in one command.",
+  "description": "Agentizer — Turn any website into an AI-powered agentfront. Crawl, generate, deploy in one command.",
   "author": {
     "name": "Iris Lab",
     "email": "hello@codiris.app"
@@ -9,5 +9,5 @@
   "homepage": "https://codiris.app/skills",
   "repository": "https://github.com/Humiris/wwa-transform",
   "license": "MIT",
-  "keywords": ["wwa", "agentfront", "transform", "website", "ai-agent", "deploy"]
+  "keywords": ["agentizer", "agentfront", "transform", "website", "ai-agent", "deploy", "wwa"]
 }

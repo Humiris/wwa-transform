@@ -1,11 +1,11 @@
 {
-  "name": "wwa-plugins",
+  "name": "agentizer-plugins",
   "interface": {
-    "displayName": "WWA Plugins by Iris Lab"
+    "displayName": "Agentizer by Iris Lab"
   },
   "plugins": [
     {
-      "name": "wwa-transform",
+      "name": "agentizer",
       "source": {
         "source": "local",
         "path": "."

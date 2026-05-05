@@ -1,20 +1,20 @@
-# WWA Transform
+# Agentizer
 
 > Turn any website into an AI-powered agentfront — crawl, generate, deploy.
 
-WWA Transform is a plugin for **Claude Code** and **Codex** that transforms any website into a full agent-first experience with AI chat, voice calls, interactive product browsing, conversational checkout, and more.
+Agentizer is a plugin for **Claude Code** and **Codex** that transforms any website into a full agent-first experience with AI chat, voice calls, interactive product browsing, conversational checkout, and more.
 
 ## Install
 
 ### Claude Code
 
 ```bash
-git clone https://github.com/Humiris/wwa-transform.git ~/.claude/skills/wwa-transform
+git clone https://github.com/Humiris/wwa-transform.git ~/.claude/skills/agentizer
 ```
 
 Then in Claude Code:
 ```
-/wwa-transform https://stripe.com
+/agentizer https://stripe.com
 ```
 
 ### Codex (OpenAI)
@@ -22,7 +22,7 @@ Then in Claude Code:
 **Option A — Personal install:**
 ```bash
 # Clone the plugin
-git clone https://github.com/Humiris/wwa-transform.git ~/.codex/plugins/wwa-transform
+git clone https://github.com/Humiris/wwa-transform.git ~/.codex/plugins/agentizer
 
 # Add to your personal marketplace
 mkdir -p ~/.agents/plugins
@@ -31,8 +31,8 @@ cat > ~/.agents/plugins/marketplace.json << 'EOF'
   "name": "wwa-plugins",
   "interface": { "displayName": "WWA Plugins" },
   "plugins": [{
-    "name": "wwa-transform",
-    "source": { "source": "local", "path": "../../.codex/plugins/wwa-transform" },
+    "name": "agentizer",
+    "source": { "source": "local", "path": "../../.codex/plugins/agentizer" },
     "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
     "category": "Development"
   }]
@@ -40,21 +40,21 @@ cat > ~/.agents/plugins/marketplace.json << 'EOF'
 EOF
 ```
 
-Then restart Codex, go to Plugins, and install **WWA Transform**.
+Then restart Codex, go to Plugins, and install **Agentizer**.
 
 **Option B — Repo-scoped install (for teams):**
 ```bash
 # In your repo root
 mkdir -p .agents/plugins
-git clone https://github.com/Humiris/wwa-transform.git .agents/plugins/wwa-transform
+git clone https://github.com/Humiris/wwa-transform.git .agents/plugins/agentizer
 
 cat > .agents/plugins/marketplace.json << 'EOF'
 {
   "name": "wwa-plugins",
   "interface": { "displayName": "WWA Plugins" },
   "plugins": [{
-    "name": "wwa-transform",
-    "source": { "source": "local", "path": "./wwa-transform" },
+    "name": "agentizer",
+    "source": { "source": "local", "path": "./agentizer" },
     "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
     "category": "Development"
   }]
@@ -69,6 +69,8 @@ Then ask Codex: *"Transform stripe.com into an agentfront"*
 ```bash
 npx wwa-transform https://stripe.com
 ```
+
+> The standalone CLI is still published under the `wwa-transform` npm package.
 
 ## What It Does
 
@@ -107,10 +109,10 @@ Next.js 16 / React 19 / Tailwind v4 / Framer Motion / Zustand / Gemini 3.1 Flash
 ## Plugin Structure
 
 ```
-wwa-transform/
+agentizer/
 ├── .claude-plugin/plugin.json    # Claude Code manifest
 ├── .codex-plugin/plugin.json     # Codex manifest
-├── SKILL.md                      # Core skill instructions (at repo root so Claude Code auto-discovers on clone to ~/.claude/skills/wwa-transform)
+├── SKILL.md                      # Core skill instructions (at repo root so Claude Code auto-discovers on clone to ~/.claude/skills/agentizer)
 ├── references/                   # Architecture, crawling, deployment guides
 ├── template/                     # Next.js agentfront template
 ├── cli/                          # Standalone CLI

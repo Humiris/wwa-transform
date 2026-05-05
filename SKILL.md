@@ -1,10 +1,11 @@
 ---
-name: wwa-transform
+name: agentizer
 description: >-
-  This skill should be used when the user asks to "transform a website",
-  "create an agentfront", "build a WWA app", "make an agent-first website",
-  "turn a website into an agent experience", "wwa transform", or mentions
-  "agentfront" in context of building one from a URL.
+  This skill should be used when the user asks to "agentize a website",
+  "transform a website", "create an agentfront", "build a WWA app",
+  "make an agent-first website", "turn a website into an agent experience",
+  "agentizer", "wwa transform", or mentions "agentfront" in context of
+  building one from a URL.
 version: 2.0.0
 allowed-tools:
   - Read
@@ -19,7 +20,7 @@ allowed-tools:
 argument-hint: <website-url>
 ---
 
-# WWA Transform v2 — Intelligent Website-to-Agentfront
+# Agentizer v2 — Intelligent Website-to-Agentfront
 
 Transform any website into a custom AI-powered agentfront. The skill deeply analyzes the company — its market, products, value proposition, customers — then builds a tailored experience. NOT a template copy-paste.
 
@@ -34,7 +35,7 @@ Transform any website into a custom AI-powered agentfront. The skill deeply anal
 The agentfront must reflect what the company ACTUALLY is, not what Visa is.
 
 ## Template Location
-`./template/` relative to this SKILL.md — the skill directory (typically `~/.claude/skills/wwa-transform/` after install) contains the Next.js template. Content is generated custom per company. After `cp -R`, run the template's `npx next build` once to confirm nothing regressed in the template itself.
+`./template/` relative to this SKILL.md — the skill directory (typically `~/.claude/skills/agentizer/` after install) contains the Next.js template. Content is generated custom per company. After `cp -R`, run the template's `npx next build` once to confirm nothing regressed in the template itself.
 
 ## Reference Implementation
 **https://wwa.visa.codiris.app** — live demo of a finished agentfront (payment card company). Source for the template is at https://github.com/Humiris/wwa-transform/tree/main/template.
@@ -580,7 +581,7 @@ Then, for EACH non-logo image, use `Read` on it and log either `VERIFIED: shows 
 ### Step 3.1: Copy Framework
 
 ```bash
-# From inside the cloned skill (typically ~/.claude/skills/wwa-transform):
+# From inside the cloned skill (typically ~/.claude/skills/agentizer):
 mkdir -p ~/wwa.{domain}
 cp -R ./template/. ~/wwa.{domain}/
 cd ~/wwa.{domain} && npm install

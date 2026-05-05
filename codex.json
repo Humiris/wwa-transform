@@ -1,5 +1,5 @@
 {
-  "name": "wwa-transform",
+  "name": "agentizer",
   "version": "2.0.0",
   "description": "Transform any website into an AI-powered agentfront",
   "instructions": "Read AGENTS.md for setup, then follow SKILL.md at the repo root for the full workflow.",

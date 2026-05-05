@@ -1,6 +1,6 @@
-# WWA Transform Agent
+# Agentizer Agent
 
-This repository contains the WWA Transform tool — an AI agent that transforms any website into an agent-first experience (agentfront).
+This repository contains Agentizer — an AI agent that transforms any website into an agent-first experience (agentfront).
 
 ## How to Use
 
