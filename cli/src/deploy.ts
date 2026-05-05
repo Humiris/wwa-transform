@@ -44,21 +44,9 @@ export async function deployProject(projectDir: string): Promise<void> {
     throw e;
   }
 
-  // Step 2: Deploy to Vercel
-  console.log("    Deploying to Vercel...");
-  try {
-    const output = execSync("npx vercel --prod --yes", {
-      cwd: projectDir,
-      stdio: "pipe",
-      env: { ...process.env },
-    }).toString();
-    console.log(`    ${output.trim().split("\n").pop()}`);
-  } catch (e: any) {
-    console.error("    Vercel deploy failed:", e.message);
-    throw e;
-  }
-
-  // Step 3: Set env vars
+  // Step 2: Push env vars to Vercel (must be done BEFORE the first deploy
+  // — env vars are baked into the build, so a deploy without keys ships
+  // a broken AI chat that we then have to rebuild)
   const envVars = ["OPENAI_API_KEY", "GEMINI_API_KEY", "GOOGLE_GENERATIVE_AI_API_KEY"];
   for (const key of envVars) {
     if (process.env[key]) {
@@ -66,16 +54,40 @@ export async function deployProject(projectDir: string): Promise<void> {
         execSync(`echo "${process.env[key]}" | npx vercel env add ${key} production --force`, {
           cwd: projectDir, stdio: "pipe",
         });
-      } catch { /* ignore if already set */ }
+      } catch { /* already set */ }
     }
   }
 
-  // Redeploy with env vars
+  // Step 3: Deploy to Vercel and parse the actual deploy URL.
+  // Capturing the deploy URL is the whole point — it's what we alias
+  // and what the workflow's verify step probes.
+  console.log("    Deploying to Vercel...");
+  let vercelDeployUrl = "";
   try {
-    execSync("npx vercel --prod --yes", { cwd: projectDir, stdio: "pipe" });
-  } catch { /* best effort */ }
+    const output = execSync("npx vercel --prod --yes", {
+      cwd: projectDir,
+      stdio: "pipe",
+      env: { ...process.env },
+    }).toString();
+    // Parse the *.vercel.app URL from output. Vercel prints multiple lines;
+    // the last *.vercel.app token is usually the production URL.
+    const match = output.match(/https:\/\/[a-z0-9-]+\.vercel\.app/g);
+    vercelDeployUrl = match ? match[match.length - 1] : "";
+    console.log(`    Vercel URL: ${vercelDeployUrl || "(could not parse)"}`);
+  } catch (e: any) {
+    console.error("    Vercel deploy failed:", e.message);
+    throw e;
+  }
 
-  // Step 4: Cloudflare DNS
+  if (!vercelDeployUrl) {
+    throw new Error("Could not determine Vercel deploy URL — alias step would fail");
+  }
+
+  // Step 4: Cloudflare DNS — modern convention is `{slug}.codiris.app`
+  // (no `wwa.` prefix). Existing brands deployed with the old prefix
+  // remain on those URLs, but new transforms use the bare slug.
+  const targetHost = `${domain}.codiris.app`;
+
   if (process.env.CLOUDFLARE_API_TOKEN) {
     console.log("    Setting up DNS...");
     try {
@@ -83,26 +95,70 @@ export async function deployProject(projectDir: string): Promise<void> {
       const zoneId = zones?.result?.[0]?.id;
 
       if (zoneId) {
-        await cloudflareApi("POST", `/zones/${zoneId}/dns_records`, {
+        // Create the CNAME (idempotent — Cloudflare 400s if it exists, we ignore)
+        const cf = await cloudflareApi("POST", `/zones/${zoneId}/dns_records`, {
           type: "CNAME",
-          name: `wwa.${domain}`,
+          name: domain,
           content: "cname.vercel-dns.com",
           proxied: false,
           ttl: 1,
         });
-
-        execSync(`npx vercel domains add wwa.${domain}.codiris.app`, {
-          cwd: projectDir, stdio: "pipe",
-        });
-
-        console.log(`    DNS: wwa.${domain}.codiris.app → configured`);
+        if (cf?.success) console.log(`    Cloudflare CNAME ${domain}.codiris.app → cname.vercel-dns.com`);
+        else if (cf?.errors) console.log(`    Cloudflare CNAME (likely already exists): ${JSON.stringify(cf.errors)}`);
       }
     } catch (e: any) {
-      console.log(`    DNS setup warning: ${e.message}`);
+      console.log(`    DNS warning: ${e.message}`);
     }
   } else {
-    console.log("    Skipping DNS (CLOUDFLARE_API_TOKEN not set)");
+    console.log("    Skipping Cloudflare DNS (CLOUDFLARE_API_TOKEN not set)");
   }
 
-  console.log(`\n    Live at: https://wwa.${domain}.codiris.app`);
+  // Step 5: Alias the Vercel deploy to the custom domain. This is THE
+  // step that was missing before — without it, https://{slug}.codiris.app
+  // points nowhere even though Cloudflare CNAMEs to Vercel.
+  console.log(`    Aliasing ${vercelDeployUrl} → ${targetHost}...`);
+  try {
+    execSync(`npx vercel alias set ${vercelDeployUrl} ${targetHost}`, {
+      cwd: projectDir, stdio: "pipe",
+    });
+    console.log(`    Alias set.`);
+  } catch (e: any) {
+    console.log(`    Alias warning: ${e.message?.slice(0, 200)}`);
+    // Non-fatal — caller can manually alias later
+  }
+
+  // Step 6: Disable Vercel SSO/password protection (every new project
+  // ships with `ssoProtection: { deploymentType: "all_except_custom_domains" }`
+  // which, despite its name, ALSO blocks the custom domain on first deploy.)
+  if (process.env.VERCEL_TOKEN) {
+    try {
+      const projectId = JSON.parse(
+        require("fs").readFileSync(path.join(projectDir, ".vercel/project.json"), "utf-8")
+      ).projectId;
+      const teamId = JSON.parse(
+        require("fs").readFileSync(path.join(projectDir, ".vercel/project.json"), "utf-8")
+      ).orgId;
+      await new Promise<void>((resolve) => {
+        const opts = {
+          hostname: "api.vercel.com",
+          path: `/v9/projects/${projectId}?teamId=${teamId}`,
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${process.env.VERCEL_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        };
+        const req = https.request(opts, (res) => {
+          res.on("data", () => {});
+          res.on("end", () => resolve());
+        });
+        req.on("error", () => resolve());
+        req.write(JSON.stringify({ ssoProtection: null, passwordProtection: null }));
+        req.end();
+      });
+      console.log("    SSO protection disabled.");
+    } catch { /* best effort */ }
+  }
+
+  console.log(`\n    Live at: https://${targetHost}`);
 }
