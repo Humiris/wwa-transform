@@ -61,11 +61,18 @@ jobs:
         uses: actions/setup-node@v4
         with: { node-version: '20' }
 
-      - name: Install CLI deps + build
+      - name: Install CLI deps
         working-directory: cli
-        run: |
-          npm ci --silent || npm install --silent
-          npm run build --silent
+        # Skip lifecycle scripts so the `prepare: "tsc"` script (which runs
+        # during `npm install`) can't hang the runner — we'll build explicitly
+        # in the next step. --no-audit --no-fund keeps stdout quiet.
+        run: npm install --ignore-scripts --no-audit --no-fund
+        timeout-minutes: 3
+
+      - name: Build CLI
+        working-directory: cli
+        run: npx tsc
+        timeout-minutes: 2
 
       - name: Mark progress — crawling
         run: |
