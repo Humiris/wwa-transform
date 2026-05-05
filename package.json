@@ -1,6 +1,6 @@
 {
   "name": "codiris-agentizer",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Agentizer — Turn any website into an agent-first experience. Works with Claude Code, Codex, Cursor, Antigravity, or as a standalone CLI.",
   "license": "MIT",
   "homepage": "https://codiris.app/skills",

@@ -1,6 +1,6 @@
 {
   "name": "codiris-agentizer",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Codiris Agentizer — Turn any website into an AI-powered agentfront. Crawl, generate, deploy in one command.",
   "author": {
     "name": "Iris Lab",
