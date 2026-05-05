@@ -1,13 +1,14 @@
 {
-  "name": "agentizer-plugins",
+  "name": "codiris-plugins",
   "interface": {
-    "displayName": "Agentizer by Iris Lab",
-    "description": "Turn any website into an AI-powered agentfront — crawl, generate, deploy in one command.",
-    "websiteURL": "https://codiris.app/skills"
+    "displayName": "Codiris Plugins",
+    "description": "Plugins by Iris Lab / Codiris — turn any website into an AI-powered agentfront.",
+    "websiteURL": "https://codiris.app/skills",
+    "logo": "./assets/logo-256.png"
   },
   "plugins": [
     {
-      "name": "agentizer",
+      "name": "codiris-agentizer",
       "source": {
         "source": "github",
         "repo": "Humiris/wwa-transform",

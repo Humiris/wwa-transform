@@ -1,8 +1,8 @@
-# Agentizer
+# Codiris Agentizer
 
 > Turn any website into an AI-powered agentfront — crawl, generate, deploy.
 
-Agentizer is a plugin for **Claude Code** and **Codex** that transforms any website into a full agent-first experience with AI chat, voice calls, interactive product browsing, conversational checkout, and more.
+Codiris Agentizer is a plugin for **Claude Code** and **Codex** that transforms any website into a full agent-first experience with AI chat, voice calls, interactive product browsing, conversational checkout, and more.
 
 ## Install
 

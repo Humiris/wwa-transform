@@ -1,6 +1,6 @@
-# Agentizer Agent
+# Codiris Agentizer Agent
 
-This repository contains Agentizer — an AI agent that transforms any website into an agent-first experience (agentfront).
+This repository contains Codiris Agentizer — an AI agent that transforms any website into an agent-first experience (agentfront).
 
 ## How to Use
 

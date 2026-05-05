@@ -1,5 +1,5 @@
 ---
-name: agentizer
+name: codiris-agentizer
 description: >-
   This skill should be used when the user asks to "agentize a website",
   "transform a website", "create an agentfront", "build a WWA app",
@@ -20,7 +20,7 @@ allowed-tools:
 argument-hint: <website-url>
 ---
 
-# Agentizer v2 — Intelligent Website-to-Agentfront
+# Codiris Agentizer v2 — Intelligent Website-to-Agentfront
 
 Transform any website into a custom AI-powered agentfront. The skill deeply analyzes the company — its market, products, value proposition, customers — then builds a tailored experience. NOT a template copy-paste.
 
