@@ -55,8 +55,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Node 20
+        # No cache: we .gitignore package-lock.json so there's nothing to cache against.
+        # Adding cache-dependency-path: 'cli/package-lock.json' fails the step with
+        # "Some specified paths were not resolved, unable to cache dependencies."
         uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm', cache-dependency-path: 'cli/package-lock.json' }
+        with: { node-version: '20' }
 
       - name: Install CLI deps + build
         working-directory: cli
