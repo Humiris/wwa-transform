@@ -1,0 +1,13 @@
+{
+  "name": "agentizer-sdk",
+  "version": "1.0.0",
+  "description": "JavaScript SDK for the Agentizer transform API — turn any website into an AI-powered agentfront.",
+  "main": "agentizer.js",
+  "type": "module",
+  "files": ["agentizer.js", "README.md"],
+  "keywords": ["agentizer", "agentfront", "ai-agent", "mcp", "sdk"],
+  "license": "MIT",
+  "homepage": "https://codiris.app/skills",
+  "repository": "https://github.com/Humiris/wwa-transform",
+  "engines": { "node": ">=18" }
+}

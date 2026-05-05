@@ -1,0 +1,41 @@
+================================================================
+Agentizer — Codex Plugin Submission · Manifest Validation
+================================================================
+
+[.codex-plugin/plugin.json]
+  OK      name: agentizer
+  OK      version: 2.0.1
+  OK      description: Turn any website into an AI-powered agentfront — crawl, generate, deploy in one command.
+  OK      author: {'name': 'Iris Lab', 'email': 'hello@codiris.app', 'url': 'https://codiris.app'}
+  OK      license: MIT
+  OK      interface: (see below)
+  -- interface --
+  OK      displayName: Agentizer
+  OK      shortDescription: Transform any website into an AI-powered agentfront
+  OK      longDescription: Agentizer crawls any website, analyzes the company (marke...
+  OK      developerName: Iris Lab
+  OK      category: Development
+  OK      logo: ./assets/logo-256.png
+  OK      (recommended) websiteURL: set
+  OK      (recommended) privacyPolicyURL: set
+  OK      (recommended) termsOfServiceURL: set
+  OK      (recommended) defaultPrompt: set
+  OK      (recommended) brandColor: set
+  OK      (recommended) capabilities: set
+  OK      (recommended) logoLarge: set
+
+[marketplace.json]
+  OK      name: agentizer-plugins
+  OK      displayName: Agentizer by Iris Lab
+  OK      plugin source: github (Humiris/wwa-transform)
+
+[Logos]
+  OK      assets/logo-256.png: 25,594 bytes
+  OK      assets/logo-1024.png: 127,010 bytes
+  OK      assets/logo.svg: 151,463 bytes
+
+[Skill]
+  OK      SKILL.md (file, 106,170 bytes)
+  OK      skills/agentizer/SKILL.md (symlink, 106,170 bytes)
+
+Result: ready to submit.

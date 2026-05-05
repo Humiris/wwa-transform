@@ -1,0 +1,16 @@
+{
+  "name": "@agentizer/sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for the Agentizer transform API — turn any website into an AI-powered agentfront.",
+  "main": "agentizer.ts",
+  "types": "agentizer.ts",
+  "files": ["agentizer.ts", "README.md"],
+  "scripts": {
+    "build": "tsc agentizer.ts --target es2022 --module esnext --moduleResolution bundler --declaration --outDir dist"
+  },
+  "keywords": ["agentizer", "agentfront", "ai-agent", "mcp", "sdk"],
+  "license": "MIT",
+  "homepage": "https://codiris.app/skills",
+  "repository": "https://github.com/Humiris/wwa-transform",
+  "engines": { "node": ">=18" }
+}
